@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" version="29.2.1">
+  <diagram name="Page-1" id="wrWq3x9GEaRFQCM9iU5Z">
+    <mxGraphModel dx="2618" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;div&gt;Utilisateur&lt;/div&gt;&lt;div&gt;(Navigateur Web/client)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="190" x="185" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;color: rgb(255, 102, 102);&quot;&gt;Frontend Web (React)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- Dashboard cryptos&lt;/div&gt;&lt;div&gt;- Graphiques&lt;/div&gt;&lt;div&gt;- Alertes &amp;amp; Portefeuille&lt;/div&gt;&lt;div&gt;- Authentification (UI)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="240" x="-200" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-11" edge="1" parent="1" source="92p_JR-4ebUP3i_16ZR0-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="92p_JR-4ebUP3i_16ZR0-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-19" connectable="0" parent="92p_JR-4ebUP3i_16ZR0-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="SQL (pg)" vertex="1">
+          <mxGeometry relative="1" x="-0.4259" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;font style=&quot;color: rgb(255, 102, 102);&quot;&gt;API Backend (Node.js / Express)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- /cryptos, /latest, /prices&lt;/div&gt;&lt;div&gt;- /auth (register/login)&lt;/div&gt;&lt;div&gt;- /alerts&lt;/div&gt;&lt;div&gt;- /portfolio&lt;/div&gt;&lt;div&gt;- JWT + Rôles&lt;/div&gt;&lt;div&gt;- Middlewares&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="260" x="-420" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-8" edge="1" parent="1" source="92p_JR-4ebUP3i_16ZR0-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.443;entryY=-0.01;entryDx=0;entryDy=0;entryPerimeter=0;" target="92p_JR-4ebUP3i_16ZR0-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-18" connectable="0" parent="92p_JR-4ebUP3i_16ZR0-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&amp;nbsp;HTTP / HTTPS (REST)" vertex="1">
+          <mxGeometry relative="1" x="-0.0513" y="-3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-9" edge="1" parent="1" source="92p_JR-4ebUP3i_16ZR0-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.455;entryY=-0.019;entryDx=0;entryDy=0;entryPerimeter=0;" target="92p_JR-4ebUP3i_16ZR0-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-16" connectable="0" parent="92p_JR-4ebUP3i_16ZR0-9" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Appels API (Axios, JSON)" vertex="1">
+          <mxGeometry relative="1" x="-0.4471" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;div&gt;&lt;font style=&quot;color: rgb(255, 102, 102);&quot;&gt;Base de données PostgreSQL (Docker)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Tables :&lt;/div&gt;&lt;div&gt;- cryptos&lt;/div&gt;&lt;div&gt;- prices&lt;/div&gt;&lt;div&gt;- users&lt;/div&gt;&lt;div&gt;- alerts&lt;/div&gt;&lt;div&gt;- portfolio&lt;/div&gt;&lt;div&gt;- portfolio_transactions&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="280" x="-260" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-15" edge="1" parent="1" source="92p_JR-4ebUP3i_16ZR0-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="92p_JR-4ebUP3i_16ZR0-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-20" connectable="0" parent="92p_JR-4ebUP3i_16ZR0-15" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="HTTP (API externe)" vertex="1">
+          <mxGeometry relative="1" x="0.1661" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="&lt;div&gt;&lt;font style=&quot;color: rgb(255, 102, 102);&quot;&gt;Collector (Node.js console app)&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- Appels CoinGecko&lt;/div&gt;&lt;div&gt;- Insertion en base&lt;/div&gt;&lt;div&gt;- Scheduler (cron)&lt;/div&gt;&lt;div style=&quot;&quot;&gt;- Tolérance aux pannes&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="210" x="420" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;div&gt;&lt;font style=&quot;color: rgb(255, 51, 51);&quot;&gt;API CoinGecko&lt;/font&gt;&lt;/div&gt;&lt;div&gt;(Source de données)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="150" x="510" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-14" edge="1" parent="1" source="92p_JR-4ebUP3i_16ZR0-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="92p_JR-4ebUP3i_16ZR0-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="92p_JR-4ebUP3i_16ZR0-21" connectable="0" parent="92p_JR-4ebUP3i_16ZR0-14" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="INSERT périodiques" vertex="1">
+          <mxGeometry relative="1" x="-0.5831" y="-4" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
