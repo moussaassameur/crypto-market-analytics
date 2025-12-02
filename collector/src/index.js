@@ -1,8 +1,15 @@
 const axios = require("axios");
-const db = require("./db");  // <-- IMPORT DE LA DB
+const db = require("./db");
 
 const COINS = ["bitcoin", "ethereum", "solana"];
 const VS_CURRENCY = "usd";
+
+// Mapping entre les IDs CoinGecko et les IDs de la table "cryptos"
+const CRYPTO_IDS = {
+  bitcoin: 1,
+  ethereum: 2,
+  solana: 3,
+};
 
 // === US1 : Récupération des prix simples ===
 async function fetchPrices() {
@@ -26,18 +33,26 @@ async function fetchPrices() {
   }
 }
 
-// === US3 : Sauvegarde en base ===
+// === US3/US4 : Sauvegarde d'un enregistrement dans la table prices ===
 async function saveMarketData(coin) {
+  const cryptoId = CRYPTO_IDS[coin.id];
+
+  if (!cryptoId) {
+    console.warn(
+      `⚠ Crypto inconnue côté mapping : ${coin.id}, données non enregistrées.`
+    );
+    return;
+  }
+
   const query = `
-    INSERT INTO market_data
-      (coin_id, symbol, price, market_cap, volume_24h, change_1h, change_24h, collected_at)
+    INSERT INTO prices
+      (crypto_id, price, market_cap, volume_24h, change_1h, change_24h, collected_at)
     VALUES
-      ($1, $2, $3, $4, $5, $6, $7, NOW());
+      ($1, $2, $3, $4, $5, $6, NOW());
   `;
 
   const values = [
-    coin.id,
-    coin.symbol,
+    cryptoId,
     coin.current_price,
     coin.market_cap,
     coin.total_volume,
@@ -47,9 +62,9 @@ async function saveMarketData(coin) {
 
   try {
     await db.query(query, values);
-    console.log(`✔ Données enregistrées pour ${coin.id}`);
+    console.log(`Données enregistrées dans prices pour ${coin.id}`);
   } catch (err) {
-    console.error(`❌ Erreur DB pour ${coin.id} :`, err.message);
+    console.error(`Erreur DB pour ${coin.id} :`, err.message);
   }
 }
 
@@ -80,7 +95,8 @@ async function fetchMarketData() {
       console.log(`Variation 1h    : ${coin.price_change_percentage_1h_in_currency}%`);
       console.log(`Variation 24h   : ${coin.price_change_percentage_24h}%`);
 
-      await saveMarketData(coin); //  Sauvegarde en DB
+      // Sauvegarde dans la base
+      await saveMarketData(coin);
     }
   } catch (err) {
     console.error(
@@ -91,5 +107,5 @@ async function fetchMarketData() {
 }
 
 
-// fetchPrices();
-fetchMarketData();
+// fetchPrices();      // US1 si tu veux tester juste les prix
+fetchMarketData();     // US2 + US3/US4 : récupère + enregistre en DB
