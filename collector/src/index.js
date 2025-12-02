@@ -1,6 +1,6 @@
 const axios = require("axios");
 const db = require("./db");
-
+const cron = require("node-cron");   
 const COINS = ["bitcoin", "ethereum", "solana"];
 const VS_CURRENCY = "usd";
 
@@ -109,3 +109,16 @@ async function fetchMarketData() {
 
 // fetchPrices();      // US1 si tu veux tester juste les prix
 fetchMarketData();     // US2 + US3/US4 : récupère + enregistre en DB
+// Scheduler US5 : collecte automatique 
+function startScheduler() {
+  console.log(" Démarrage du scheduler de collecte...");
+
+  // "*/5 * * * *" = toutes les 5 minutes
+  cron.schedule("*/5 * * * *", async () => {
+    console.log("\n Nouvelle collecte planifiée :", new Date().toISOString());
+    await fetchMarketData();
+  });
+}
+
+// Point d'entrée
+startScheduler();
