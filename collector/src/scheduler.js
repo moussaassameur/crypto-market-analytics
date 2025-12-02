@@ -1,6 +1,6 @@
 const amqp = require("amqplib");
 const cron = require("node-cron");
-
+const logger = require("./logger");
 const QUEUE_NAME = "collect-tasks";
 const AMQP_URL = "amqp://guest:guest@localhost:5672";
 
@@ -23,10 +23,10 @@ async function startScheduler() {
       const buffer = Buffer.from(JSON.stringify(payload));
       channel.sendToQueue(QUEUE_NAME, buffer, { persistent: true });
 
-      console.log(" Tâche de collecte envoyée à la file :", payload);
+      logger.info(`Tâche envoyée : ${JSON.stringify(payload)}`);
     });
   } catch (err) {
-    console.error(" Erreur dans le scheduler RabbitMQ :", err.message);
+    logger.error(`Erreur scheduler RabbitMQ : ${err.message}`);
     process.exit(1);
   }
 }

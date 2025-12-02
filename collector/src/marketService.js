@@ -1,5 +1,6 @@
 const axios = require("axios");
 const db = require("./db");
+const logger = require("./logger");
 
 const COINS = ["bitcoin", "ethereum", "solana"];
 const VS_CURRENCY = "usd";
@@ -37,9 +38,9 @@ async function saveMarketData(coin) {
 
   try {
     await db.query(query, values);
-    console.log(` Données enregistrées dans prices pour ${coin.id}`);
+   logger.info(`Données enregistrées pour ${coin.id}`);
   } catch (err) {
-    console.error(` Erreur DB pour ${coin.id} :`, err.message);
+    logger.error(`Erreur scheduler RabbitMQ : ${err.message}`);
   }
 }
 
