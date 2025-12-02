@@ -11,3 +11,12 @@ services:
     volumes:
       - ./docker/postgres-data:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: crypto-rabbitmq
+    ports:
+      - "5672:5672"    # port pour les messages (amqp)
+      - "15672:15672"  # port pour l'interface web de RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
