@@ -7,6 +7,7 @@ const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 
 const cryptoRoutes = require("./routes/crypto.routes");
+const priceRoutes = require("./routes/price.routes");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/api", healthRoutes);
 app.use("/api", dbHealthRoutes);
+app.use("/api", priceRoutes);
 app.use("/api", cryptoRoutes);
 
 app.use(notFound);
