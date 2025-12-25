@@ -4,11 +4,9 @@ const getCryptos = async (req, res, next) => {
   try {
     const cryptos = await cryptoRepository.getAllCryptos();
     res.json(cryptos);
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next(e);
   }
 };
 
-module.exports = {
-  getCryptos,
-};
+module.exports = { getCryptos };
