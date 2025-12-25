@@ -68,11 +68,11 @@ const login = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign(
-      { sub: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
-    );
+   const token = jwt.sign(
+  { sub: user.id, email: user.email, role: user.role || "user" },
+  process.env.JWT_SECRET,
+  { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
+);
 
     return res.json({ token });
   } catch (e) {

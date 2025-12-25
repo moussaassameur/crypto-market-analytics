@@ -1,19 +1,27 @@
 const db = require("../db/pool");
 
 const findByEmail = async (email) => {
-  const { rows } = await db.query(
-    "SELECT id, email, password_hash, created_at FROM users WHERE email = $1",
-    [email]
+  const r = await db.query(
+    "SELECT id, email, password_hash, role, created_at FROM users WHERE email = $1",
+    [email.toLowerCase()]
   );
-  return rows[0] || null;
+  return r.rows[0] || null;
+};
+
+const findById = async (id) => {
+  const r = await db.query(
+    "SELECT id, email, role, created_at FROM users WHERE id = $1",
+    [id]
+  );
+  return r.rows[0] || null;
 };
 
 const createUser = async (email, passwordHash) => {
-  const { rows } = await db.query(
-    "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at",
-    [email, passwordHash]
+  const r = await db.query(
+    "INSERT INTO users (email, password_hash, role) VALUES ($1, $2, 'user') RETURNING id, email, role, created_at",
+    [email.toLowerCase(), passwordHash]
   );
-  return rows[0];
+  return r.rows[0];
 };
 
-module.exports = { findByEmail, createUser };
+module.exports = { findByEmail, findById, createUser };

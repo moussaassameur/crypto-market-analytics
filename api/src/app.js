@@ -7,9 +7,9 @@ const dbHealthRoutes = require("./routes/dbHealth.routes");
 const cryptoRoutes = require("./routes/crypto.routes");
 const priceRoutes = require("./routes/price.routes");
 const authRoutes = require("./routes/auth.routes");
+const meRoutes = require("./routes/me.routes");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
-
 
 const app = express();
 
@@ -29,6 +29,7 @@ app.use("/api", dbHealthRoutes);
 app.use("/api", priceRoutes);
 app.use("/api", cryptoRoutes);
 app.use("/api", authRoutes);
+app.use("/api", meRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
