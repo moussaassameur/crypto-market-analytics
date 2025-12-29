@@ -9,4 +9,13 @@ const getCryptos = async (req, res, next) => {
   }
 };
 
-module.exports = { getCryptos };
+const getLatest = async (req, res, next) => {
+  try {
+    const cryptos = await cryptoRepository.getAllCryptos();
+    res.json(cryptos);
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { getCryptos, getLatest };
