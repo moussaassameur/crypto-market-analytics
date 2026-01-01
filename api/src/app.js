@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const logger = require("./utils/logger");
 const healthRoutes = require("./routes/health.routes");
@@ -12,6 +13,15 @@ const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
+
+// CORS configuration
+const corsOptions = {
+  origin: ["http://localhost:3001"],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 // Morgan middleware with Winston logger
 app.use(
