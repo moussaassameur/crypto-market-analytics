@@ -86,9 +86,7 @@ export function LoginPage({ onLogin, onSwitchToRegister }: LoginPageProps) {
                 <input type="checkbox" className="mr-2 rounded" />
                 Se souvenir de moi
               </label>
-              <a href="#" className="text-blue-400 hover:text-blue-300">
-                Mot de passe oublié?
-              </a>
+             
             </div>
 
             <button

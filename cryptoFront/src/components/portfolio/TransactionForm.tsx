@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { cryptoList, type Transaction } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { marketService, type Crypto } from '../../services/marketService';
+import { type CreateTransactionData } from '../../services/portfolioService';
 
 interface TransactionFormProps {
-  onSubmit: (transaction: Omit<Transaction, 'id'>) => void;
+  onSubmit: (transaction: CreateTransactionData) => void;
   onCancel: () => void;
 }
 
@@ -11,12 +12,29 @@ export function TransactionForm({ onSubmit, onCancel }: TransactionFormProps) {
   const [crypto, setCrypto] = useState('');
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [cryptoList, setCryptoList] = useState<Crypto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Charger les cryptos depuis l'API
+  useEffect(() => {
+    const loadCryptos = async () => {
+      try {
+        const data = await marketService.getLatestCryptos();
+        setCryptoList(data);
+      } catch (error) {
+        console.error('Erreur chargement cryptos:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadCryptos();
+  }, []);
+  //const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!crypto || !amount || !price || !date) {
+    if (!crypto || !amount || !price) {
       alert('Veuillez remplir tous les champs');
       return;
     }
@@ -29,8 +47,6 @@ export function TransactionForm({ onSubmit, onCancel }: TransactionFormProps) {
       crypto,
       amount: amountNum,
       price: priceNum,
-      total: amountNum * priceNum,
-      date,
     });
   };
 
@@ -84,8 +100,9 @@ export function TransactionForm({ onSubmit, onCancel }: TransactionFormProps) {
           onChange={(e) => handleCryptoChange(e.target.value)}
           className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
+          disabled={isLoading}
         >
-          <option value="">Sélectionner...</option>
+          <option value="">{isLoading ? 'Chargement...' : 'Sélectionner...'}</option>
           {cryptoList.map((c) => (
             <option key={c.id} value={c.symbol}>
               {c.name} ({c.symbol})
@@ -112,6 +129,7 @@ export function TransactionForm({ onSubmit, onCancel }: TransactionFormProps) {
       <div>
         <label className="block text-slate-300 mb-2">Prix unitaire ($)</label>
         <input
+        readOnly
           type="number"
           step="0.01"
           value={price}
@@ -122,17 +140,6 @@ export function TransactionForm({ onSubmit, onCancel }: TransactionFormProps) {
         />
       </div>
 
-      {/* Date */}
-      <div>
-        <label className="block text-slate-300 mb-2">Date</label>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
-      </div>
 
       {/* Total */}
       <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">

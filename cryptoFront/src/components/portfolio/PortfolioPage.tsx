@@ -1,83 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, TrendingUp, TrendingDown, DollarSign, Percent, Coins, Award, Activity } from 'lucide-react';
 import { TransactionForm } from './TransactionForm';
 import { TransactionTable } from './TransactionTable';
 import { PortfolioChart } from './PortfolioChart';
-import { mockTransactions, cryptoList, type Transaction } from '../../data/mockData';
+import { portfolioService, type CreateTransactionData, type Transaction, type PortfolioStats } from '../../services/portfolioService';
 
 export function PortfolioPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [stats, setStats] = useState<PortfolioStats | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddTransaction = (transaction: Omit<Transaction, 'id'>) => {
-    const newTransaction: Transaction = {
-      ...transaction,
-      id: Date.now().toString(),
-    };
-    setTransactions([...transactions, newTransaction]);
-    setIsFormOpen(false);
-  };
+  // Charger les transactions et stats au montage
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const handleDeleteTransaction = (id: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette transaction?')) {
-      setTransactions(transactions.filter((t) => t.id !== id));
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const [transactionsData, statsData] = await Promise.all([
+        portfolioService.getTransactions(),
+        portfolioService.getStats()
+      ]);
+      setTransactions(transactionsData);
+      setStats(statsData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur de chargement');
+      console.error('Erreur chargement données:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Calculate portfolio stats
-  const calculatePortfolioStats = () => {
-    let totalInvested = 0;
-    let currentValue = 0;
-    const holdings: { [key: string]: number } = {};
-    const cryptoInvestments: { [key: string]: number } = {};
-
-    transactions.forEach((tx) => {
-      if (tx.type === 'achat') {
-        totalInvested += tx.total;
-        holdings[tx.crypto] = (holdings[tx.crypto] || 0) + tx.amount;
-        cryptoInvestments[tx.crypto] = (cryptoInvestments[tx.crypto] || 0) + tx.total;
-      } else {
-        totalInvested -= tx.total;
-        holdings[tx.crypto] = (holdings[tx.crypto] || 0) - tx.amount;
-        cryptoInvestments[tx.crypto] = (cryptoInvestments[tx.crypto] || 0) - tx.total;
-      }
-    });
-
-    let bestPerformer = { crypto: '', gain: 0, percentage: 0 };
-    
-    Object.entries(holdings).forEach(([symbol, amount]) => {
-      const crypto = cryptoList.find((c) => c.symbol === symbol);
-      if (crypto && amount > 0) {
-        const value = amount * crypto.price;
-        currentValue += value;
-        
-        const invested = cryptoInvestments[symbol] || 0;
-        const gain = value - invested;
-        const gainPercentage = invested > 0 ? (gain / invested) * 100 : 0;
-        
-        if (gain > bestPerformer.gain) {
-          bestPerformer = { crypto: symbol, gain, percentage: gainPercentage };
-        }
-      }
-    });
-
-    const pnl = currentValue - totalInvested;
-    const roi = totalInvested > 0 ? (pnl / totalInvested) * 100 : 0;
-    const numCryptos = Object.keys(holdings).filter(key => holdings[key] > 0).length;
-
-    return { 
-      totalInvested, 
-      currentValue, 
-      pnl, 
-      roi, 
-      holdings,
-      numCryptos,
-      bestPerformer,
-      totalTransactions: transactions.length
-    };
+  const handleAddTransaction = async (transaction: CreateTransactionData) => {
+    try {
+      setError(null);
+      const newTransaction = await portfolioService.createTransaction(transaction);
+      setTransactions([...transactions, newTransaction]);
+      // Recharger les stats après ajout
+      const statsData = await portfolioService.getStats();
+      setStats(statsData);
+      setIsFormOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de l\'ajout');
+      console.error('Erreur ajout transaction:', err);
+    }
   };
 
-  const stats = calculatePortfolioStats();
+  const handleDeleteTransaction = async (id: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette transaction?')) {
+      try {
+        setError(null);
+        await portfolioService.deleteTransaction(id);
+        setTransactions(transactions.filter((t) => t.id !== id));
+        // Recharger les stats après suppression
+        const statsData = await portfolioService.getStats();
+        setStats(statsData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+        console.error('Erreur suppression transaction:', err);
+      }
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -88,24 +75,24 @@ export function PortfolioPage() {
             <span className="text-slate-400">Valeur totale</span>
             <DollarSign className="w-5 h-5 text-blue-400" />
           </div>
-          <p className="text-white text-2xl font-semibold">${stats.currentValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+          <p className="text-white text-2xl font-semibold">${(stats?.totalValue ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
           <p className="text-slate-400 text-sm mt-1">Portfolio actuel</p>
         </div>
 
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-400">Gain/Perte</span>
-            {stats.pnl >= 0 ? (
+            {(stats?.gainLoss ?? 0) >= 0 ? (
               <TrendingUp className="w-5 h-5 text-green-400" />
             ) : (
               <TrendingDown className="w-5 h-5 text-red-400" />
             )}
           </div>
-          <p className={`text-2xl font-semibold ${stats.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {stats.pnl >= 0 ? '+' : ''}${Math.abs(stats.pnl).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          <p className={`text-2xl font-semibold ${(stats?.gainLoss ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {(stats?.gainLoss ?? 0) >= 0 ? '+' : ''}${Math.abs(stats?.gainLoss ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </p>
-          <p className={`text-sm mt-1 ${stats.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {stats.roi >= 0 ? '+' : ''}{stats.roi.toFixed(2)}% ROI
+          <p className={`text-sm mt-1 ${(stats?.roiPercent ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {(stats?.roiPercent ?? 0) >= 0 ? '+' : ''}{(stats?.roiPercent ?? 0).toFixed(2)}% ROI
           </p>
         </div>
 
@@ -114,12 +101,9 @@ export function PortfolioPage() {
             <span className="text-slate-400">Meilleure crypto</span>
             <Award className="w-5 h-5 text-yellow-400" />
           </div>
-          {stats.bestPerformer.crypto ? (
+          {stats?.bestCrypto ? (
             <>
-              <p className="text-white text-2xl font-semibold uppercase">{stats.bestPerformer.crypto}</p>
-              <p className={`text-sm mt-1 ${stats.bestPerformer.percentage >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {stats.bestPerformer.percentage >= 0 ? '+' : ''}{stats.bestPerformer.percentage.toFixed(2)}%
-              </p>
+              <p className="text-white text-2xl font-semibold uppercase">{stats.bestCrypto}</p>
             </>
           ) : (
             <p className="text-slate-400 text-sm">Aucune crypto</p>
@@ -131,8 +115,8 @@ export function PortfolioPage() {
             <span className="text-slate-400">Diversification</span>
             <Coins className="w-5 h-5 text-purple-400" />
           </div>
-          <p className="text-white text-2xl font-semibold">{stats.numCryptos}</p>
-          <p className="text-slate-400 text-sm mt-1">{stats.totalTransactions} transaction{stats.totalTransactions > 1 ? 's' : ''}</p>
+          <p className="text-white text-2xl font-semibold">{stats?.diversification ?? 0}</p>
+          <p className="text-slate-400 text-sm mt-1">{transactions.length} transaction{transactions.length > 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -149,6 +133,20 @@ export function PortfolioPage() {
           </button>
         </div>
 
+        {/* Message d'erreur */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+            <p className="text-red-400">{error}</p>
+          </div>
+        )}
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="text-center py-8">
+            <p className="text-slate-400">Chargement...</p>
+          </div>
+        )}
+
         {/* Transaction Form Modal */}
         {isFormOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -162,10 +160,12 @@ export function PortfolioPage() {
           </div>
         )}
 
-        <TransactionTable
-          transactions={transactions}
-          onDelete={handleDeleteTransaction}
-        />
+        {!isLoading && (
+          <TransactionTable
+            transactions={transactions}
+            onDelete={handleDeleteTransaction}
+          />
+        )}
       </div>
     </div>
   );

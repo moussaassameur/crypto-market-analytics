@@ -1,6 +1,5 @@
 const portfolioRepo = require("../repositories/portfolio.repository");
 
-// Convertir une transaction DB vers le format Frontend
 const formatTransactionForFrontend = (tx) => {
   return {
     id: tx.id.toString(),
@@ -15,9 +14,7 @@ const formatTransactionForFrontend = (tx) => {
   };
 };
 
-// Convertir le format Frontend vers le format DB
 const parseTransactionFromFrontend = (body) => {
-  // Accepter les deux formats (frontend OU format original)
   return {
     type: body.type === 'achat' ? 'BUY' : body.type === 'vente' ? 'SELL' : body.type?.toUpperCase(),
     symbol: (body.crypto || body.symbol)?.toUpperCase(),
