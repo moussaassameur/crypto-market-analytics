@@ -4,12 +4,12 @@ const userRepo = require("../repositories/user.repository");
 
 const register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password || !name) {
       return res.status(400).json({
         error: "Bad Request",
-        message: "email et password requis",
+        message: "email, password et name requis",
       });
     }
 
@@ -22,11 +22,12 @@ const register = async (req, res, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await userRepo.createUser(email, passwordHash);
+    const user = await userRepo.createUser(email, passwordHash, name);
 
     return res.status(201).json({
       id: user.id,
       email: user.email,
+      name: user.name,
       created_at: user.created_at,
     });
   } catch (e) {
