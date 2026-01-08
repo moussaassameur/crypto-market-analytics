@@ -1,0 +1,49 @@
+# ==============================================
+# .dockerignore - Fichiers exclus du build Docker
+# ==============================================
+
+# Dépendances (seront installées dans le conteneur)
+node_modules/
+npm-debug.log*
+
+# Variables d'environnement (sensibles, passées via docker-compose)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Tests (pas nécessaires en production)
+__tests__/
+*.test.js
+*.spec.js
+jest.config.js
+coverage/
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker (éviter la récursion)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scripts de développement
+scripts/
+
+# Documentation
+README.md
+docs/
