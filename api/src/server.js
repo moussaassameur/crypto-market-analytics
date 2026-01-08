@@ -1,8 +1,21 @@
 require("dotenv").config();
 const app = require("./app");
+const portfolioRepo = require("./repositories/portfolio.repository");
 
 const PORT = process.env.PORT || 3000;
 const HOST = "0.0.0.0";
+
+// Initialiser les tables au démarrage
+const initDatabase = async () => {
+  try {
+    await portfolioRepo.initTable();
+    console.log(" Portfolio table initialized");
+  } catch (error) {
+    console.error(" Failed to initialize portfolio table:", error.message);
+  }
+};
+
+initDatabase();
 
 const server = app.listen(PORT, HOST, () => {
   console.log(` Server listening on http://localhost:${PORT}`);

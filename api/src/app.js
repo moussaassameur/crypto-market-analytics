@@ -9,6 +9,7 @@ const cryptoRoutes = require("./routes/crypto.routes");
 const priceRoutes = require("./routes/price.routes");
 const authRoutes = require("./routes/auth.routes");
 const meRoutes = require("./routes/me.routes");
+const portfolioRoutes = require("./routes/portfolio.routes");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -40,6 +41,7 @@ app.use("/api", priceRoutes);
 app.use("/api", cryptoRoutes);
 app.use("/api", authRoutes);
 app.use("/api", meRoutes);
+app.use("/api", portfolioRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
