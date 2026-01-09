@@ -13,6 +13,13 @@ const createAlert = async (req, res, next) => {
       });
     }
 
+    // Validation du symbole crypto (max 20 caractères, alphanumérique)
+    if (typeof crypto !== 'string' || crypto.length > 20 || !/^[A-Za-z0-9]+$/.test(crypto)) {
+      return res.status(400).json({ 
+        message: "Le symbole crypto doit être alphanumérique (max 20 caractères)" 
+      });
+    }
+
     if (!['>', '<'].includes(condition)) {
       return res.status(400).json({ 
         message: "La condition doit être '>' ou '<'" 
@@ -208,6 +215,92 @@ const formatAlert = (alert) => ({
   createdAt: alert.created_at ? new Date(alert.created_at).toISOString().split('T')[0] : null,
 });
 
+// Service de notification (injectable pour les tests)
+let notificationService = {
+  send: async (alert, price) => {
+    // Par défaut, log seulement (en prod, envoi email)
+    console.log(`[NOTIFICATION] Alerte ${alert.id} déclenchée: ${alert.crypto_symbol} ${alert.condition} ${alert.threshold} (prix: ${price})`);
+    return true;
+  },
+};
+
+// Setter pour injecter un mock de notification dans les tests
+const setNotificationService = (service) => {
+  notificationService = service;
+};
+
+// POST /api/alerts/check - Vérifier et déclencher les alertes
+// Body: { prices: { BTC: 50000, ETH: 3000, ... } }
+const checkAlerts = async (req, res, next) => {
+  try {
+    const { prices } = req.body;
+
+    if (!prices || typeof prices !== "object") {
+      return res.status(400).json({
+        message: "Le champ 'prices' est requis (objet { symbol: price })",
+      });
+    }
+
+    const results = {
+      checked: 0,
+      triggered: [],
+      errors: [],
+    };
+
+    // Pour chaque crypto avec un prix fourni
+    for (const [symbol, price] of Object.entries(prices)) {
+      if (typeof price !== "number" || price <= 0) {
+        results.errors.push({ symbol, error: "Prix invalide" });
+        continue;
+      }
+
+      // Récupérer les alertes actives non déclenchées pour cette crypto
+      const alerts = await alertRepository.findActiveBySymbol(symbol);
+
+      for (const alert of alerts) {
+        results.checked++;
+
+        // Vérifier si l'alerte doit être déclenchée
+        const shouldTrigger =
+          (alert.condition === ">" && price > parseFloat(alert.threshold)) ||
+          (alert.condition === "<" && price < parseFloat(alert.threshold));
+
+        if (shouldTrigger) {
+          // Marquer comme déclenchée
+          await alertRepository.markTriggered(alert.id);
+
+          // Envoyer notification
+          try {
+            await notificationService.send(alert, price);
+          } catch (notifErr) {
+            results.errors.push({
+              alertId: alert.id,
+              error: `Notification failed: ${notifErr.message}`,
+            });
+          }
+
+          results.triggered.push({
+            id: alert.id.toString(),
+            crypto: alert.crypto_symbol,
+            condition: alert.condition,
+            threshold: parseFloat(alert.threshold),
+            currentPrice: price,
+            userId: alert.user_id,
+            email: alert.email,
+          });
+        }
+      }
+    }
+
+    res.json({
+      message: `${results.triggered.length} alerte(s) déclenchée(s)`,
+      ...results,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createAlert,
   getAlerts,
@@ -216,4 +309,6 @@ module.exports = {
   toggleAlert,
   deleteAlert,
   resetAlert,
+  checkAlerts,
+  setNotificationService,
 };

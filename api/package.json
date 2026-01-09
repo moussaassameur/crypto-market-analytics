@@ -7,7 +7,10 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:integration": "set NODE_ENV=test&& jest tests/integration --runInBand --forceExit",
+    "test:coverage": "jest --coverage",
+    "test:all": "npm run test:integration && npm test"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

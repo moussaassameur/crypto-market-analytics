@@ -38,6 +38,24 @@ const addTransaction = async (req, res) => {
       });
     }
 
+    // Validation du symbole (max 20 caractères, alphanumérique)
+    if (typeof symbol !== 'string' || symbol.length > 20 || !/^[A-Za-z0-9]+$/.test(symbol)) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Le symbole crypto doit être alphanumérique (max 20 caractères)"
+      });
+    }
+
+    // Validation des types numériques
+    const numQuantity = Number(quantity);
+    const numPrice = Number(unit_price);
+    if (isNaN(numQuantity) || isNaN(numPrice)) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "Quantité et prix doivent être des nombres valides"
+      });
+    }
+
     if (!['BUY', 'SELL'].includes(type)) {
       return res.status(400).json({
         error: "Bad Request",
@@ -45,7 +63,7 @@ const addTransaction = async (req, res) => {
       });
     }
 
-    if (quantity <= 0 || unit_price <= 0) {
+    if (numQuantity <= 0 || numPrice <= 0) {
       return res.status(400).json({
         error: "Bad Request",
         message: "Quantité et prix doivent être positifs"
