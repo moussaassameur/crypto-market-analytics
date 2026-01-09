@@ -67,7 +67,7 @@ const remove = async (id) => {
   return r.rowCount > 0;
 };
 
-// Récupérer toutes les alertes actives pour une crypto donnée
+// Récupérer toutes les alertes actives NON déclenchées pour une crypto donnée
 // Utilisé par le collector pour vérifier les déclenchements
 const findActiveBySymbol = async (cryptoSymbol) => {
   const r = await db.query(
@@ -75,7 +75,7 @@ const findActiveBySymbol = async (cryptoSymbol) => {
             u.email, u.name
      FROM alerts a
      JOIN users u ON a.user_id = u.id
-     WHERE a.crypto_symbol = $1 AND a.active = TRUE`,
+     WHERE a.crypto_symbol = $1 AND a.active = TRUE AND a.triggered = FALSE`,
     [cryptoSymbol.toUpperCase()]
   );
   return r.rows;

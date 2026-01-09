@@ -3,7 +3,11 @@ const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
 const alertController = require("../controllers/alert.controller");
 
-// Toutes les routes sont protégées par JWT
+// POST /api/alerts/check - Vérifier et déclencher les alertes (protégé)
+// Doit être avant les routes avec :id pour éviter conflit
+router.post("/alerts/check", verifyToken, alertController.checkAlerts);
+
+// Toutes les autres routes sont protégées par JWT
 router.use(verifyToken);
 
 // POST /api/alerts - Créer une nouvelle alerte
