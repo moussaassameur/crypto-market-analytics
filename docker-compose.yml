@@ -1,4 +1,5 @@
 services:
+  # Base de données PostgreSQL
   postgres:
     image: postgres:16
     container_name: crypto-postgres
@@ -15,7 +16,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - crypto-network
 
+  # API Backend
   api:
     build: ./api
     container_name: crypto-api
@@ -34,13 +38,56 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - crypto-network
 
+  # Frontend React/Vite
+  frontend:
+    build: ./cryptoFront
+    container_name: crypto-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - crypto-network
+
+  # Collector - collecte des données de marché
+  collector:
+    build: ./collector
+    container_name: crypto-collector
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: crypto_platform
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crypto-network
+
+  # RabbitMQ (optionnel)
   rabbitmq:
     image: rabbitmq:3-management
     container_name: crypto-rabbitmq
     ports:
-      - "5672:5672"    # port pour les messages (amqp)
-      - "15672:15672"  # port pour l'interface web de RabbitMQ
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - crypto-network
+
+networks:
+  crypto-network:
+    driver: bridge
