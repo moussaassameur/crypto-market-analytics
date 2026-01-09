@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
-import { cryptoList, type Alert } from '../../data/mockData';
+import { cryptoList } from '../../data/mockData';
+
+export interface AlertFormData {
+  crypto: string;
+  condition: '>' | '<';
+  threshold: number;
+  active: boolean;
+}
 
 interface AlertFormProps {
-  initialData?: Partial<Alert>;
-  onSubmit: (alert: Omit<Alert, 'id' | 'createdAt'>) => void;
+  initialData?: Partial<AlertFormData>;
+  onSubmit: (alert: AlertFormData) => void;
   onCancel: () => void;
 }
 
 export function AlertForm({ initialData, onSubmit, onCancel }: AlertFormProps) {
   const [crypto, setCrypto] = useState(initialData?.crypto || '');
-  const [condition, setCondition] = useState(initialData?.condition || '>');
+  const [condition, setCondition] = useState<'>' | '<'>(initialData?.condition || '>');
   const [threshold, setThreshold] = useState(initialData?.threshold?.toString() || '');
-  const [notificationType, setNotificationType] = useState(initialData?.notificationType || 'email');
   const [active, setActive] = useState(initialData?.active ?? true);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,7 +32,6 @@ export function AlertForm({ initialData, onSubmit, onCancel }: AlertFormProps) {
       crypto,
       condition,
       threshold: parseFloat(threshold),
-      notificationType,
       active,
     });
   };
@@ -56,59 +61,34 @@ export function AlertForm({ initialData, onSubmit, onCancel }: AlertFormProps) {
         <label className="block text-slate-300 mb-2">Condition</label>
         <select
           value={condition}
-          onChange={(e) => setCondition(e.target.value)}
+          onChange={(e) => setCondition(e.target.value as '>' | '<')}
           className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         >
           <option value=">">Supérieur à (&gt;)</option>
           <option value="<">Inférieur à (&lt;)</option>
-          <option value="variation %">Variation en %</option>
         </select>
       </div>
 
       {/* Threshold */}
       <div>
-        <label className="block text-slate-300 mb-2">
-          {condition === 'variation %' ? 'Pourcentage (%)' : 'Prix seuil ($)'}
-        </label>
+        <label className="block text-slate-300 mb-2">Prix seuil ($)</label>
         <input
           type="number"
           step="0.01"
           value={threshold}
           onChange={(e) => setThreshold(e.target.value)}
           className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder={condition === 'variation %' ? 'Ex: 10' : 'Ex: 50000'}
+          placeholder="Ex: 50000"
           required
         />
       </div>
 
-      {/* Notification Type */}
-      <div>
-        <label className="block text-slate-300 mb-2">Type de notification</label>
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setNotificationType('email')}
-            className={`px-4 py-3 rounded-lg border transition-colors ${
-              notificationType === 'email'
-                ? 'bg-blue-500 border-blue-500 text-white'
-                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
-            }`}
-          >
-            📧 Email
-          </button>
-          <button
-            type="button"
-            onClick={() => setNotificationType('discord')}
-            className={`px-4 py-3 rounded-lg border transition-colors ${
-              notificationType === 'discord'
-                ? 'bg-blue-500 border-blue-500 text-white'
-                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
-            }`}
-          >
-            💬 Discord
-          </button>
-        </div>
+      {/* Notification Info */}
+      <div className="bg-slate-800 border border-slate-700 rounded-lg p-3">
+        <p className="text-slate-400 text-sm flex items-center gap-2">
+          📧 Notification par email à votre adresse enregistrée
+        </p>
       </div>
 
       {/* Active Toggle */}

@@ -1,6 +1,7 @@
 const axios = require("axios");
 const db = require("./db");
 const logger = require("./logger");
+const alertService = require("./alertService");
 
 const COINS = ["bitcoin", "ethereum", "solana"];
 const VS_CURRENCY = "usd";
@@ -72,6 +73,16 @@ async function fetchMarketData() {
       console.log(`Variation 24h   : ${coin.price_change_percentage_24h}%`);
 
       await saveMarketData(coin);
+    }
+
+    // Vérifier et déclencher les alertes après avoir collecté les données
+    console.log("\n🔍 === Vérification des alertes ===");
+    try {
+      const result = await alertService.processAlerts(response.data);
+      console.log(`📊 Résultat : ${result.triggered} alertes déclenchées, ${result.errors} erreurs`);
+    } catch (alertError) {
+      console.error("❌ Erreur lors de la vérification des alertes:", alertError.message);
+      console.error(alertError.stack);
     }
   } catch (err) {
     console.error("Erreur lors de la récupération des données du marché :", err.message);

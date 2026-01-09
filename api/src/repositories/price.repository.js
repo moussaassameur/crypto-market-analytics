@@ -45,10 +45,19 @@ const getPricesBySymbol = async (symbol, limit = 200) => {
   return rows;
 };
 
-const getPriceHistoryForChart = async (symbol, days = 30) => {
+const getPriceHistoryForChart = async (symbol, days = 30, granularity = 'day') => {
+  // Pour 24h, on agrège par heure. Pour les autres ranges, par jour.
+  const timeFormat = granularity === 'hour' 
+    ? "TO_CHAR(DATE_TRUNC('hour', p.collected_at), 'YYYY-MM-DD HH24:00:00')"
+    : "TO_CHAR(DATE(p.collected_at), 'YYYY-MM-DD')";
+  
+  const groupBy = granularity === 'hour'
+    ? "DATE_TRUNC('hour', p.collected_at)"
+    : "DATE(p.collected_at)";
+
   const query = `
     SELECT
-      TO_CHAR(DATE(p.collected_at), 'YYYY-MM-DD') as time,
+      ${timeFormat} as time,
       (array_agg(p.price ORDER BY p.collected_at ASC))[1] as open,
       MAX(p.price) as high,
       MIN(p.price) as low,
@@ -58,12 +67,13 @@ const getPriceHistoryForChart = async (symbol, days = 30) => {
     FROM prices p
     JOIN cryptos c ON c.id = p.crypto_id
     WHERE LOWER(c.symbol) = LOWER($1)
-    GROUP BY DATE(p.collected_at)
-    ORDER BY DATE(p.collected_at) DESC
-    LIMIT $2;
+      AND p.collected_at >= NOW() - INTERVAL '${days} days'
+    GROUP BY ${groupBy}
+    ORDER BY ${groupBy} ASC
+    LIMIT 500;
   `;
-  const { rows } = await db.query(query, [symbol, days]);
-  return rows.reverse(); // Reverse to get oldest first
+  const { rows } = await db.query(query, [symbol]);
+  return rows; // Already ordered ASC
 };
 
 const getMarketStats = async () => {

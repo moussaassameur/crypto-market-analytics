@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, LayoutDashboard, Coins, Bell, Wallet, BarChart3, Activity, User, LogOut, ChevronDown } from 'lucide-react';
+import { TrendingUp, LayoutDashboard, Coins, Bell, Wallet, Activity, User, LogOut, ChevronDown } from 'lucide-react';
 
 interface NavigationProps {
   currentPage: string;
@@ -16,7 +16,6 @@ export function Navigation({ currentPage, onNavigate, user, onLogout }: Navigati
     { id: 'cryptos', label: 'Cryptomonnaies', icon: Coins },
     { id: 'alerts', label: 'Alertes', icon: Bell },
     { id: 'portfolio', label: 'Portefeuille', icon: Wallet },
-    { id: 'analysis', label: 'Analyse', icon: BarChart3 },
     { id: 'forecast', label: 'Prévisions', icon: Activity },
   ];
 

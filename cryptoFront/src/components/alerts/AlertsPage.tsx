@@ -1,49 +1,83 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Edit, Bell, BellOff } from 'lucide-react';
-import { AlertForm } from './AlertForm';
-import { mockAlerts, type Alert } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Edit, Bell, BellOff, RefreshCw, Loader2 } from 'lucide-react';
+import { AlertForm, type AlertFormData } from './AlertForm';
+import { alertService, type Alert } from '../../services/alertService';
 
 export function AlertsPage() {
-  const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingAlert, setEditingAlert] = useState<Alert | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCreateAlert = (alert: Omit<Alert, 'id' | 'createdAt'>) => {
-    const newAlert: Alert = {
-      ...alert,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    setAlerts([...alerts, newAlert]);
-    setIsFormOpen(false);
+  // Charger les alertes au montage
+  useEffect(() => {
+    loadAlerts();
+  }, []);
+
+  const loadAlerts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await alertService.getAlerts();
+      setAlerts(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur de chargement');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleEditAlert = (alert: Omit<Alert, 'id' | 'createdAt'>) => {
-    if (editingAlert) {
-      setAlerts(
-        alerts.map((a) =>
-          a.id === editingAlert.id
-            ? { ...a, ...alert }
-            : a
-        )
-      );
-      setEditingAlert(null);
+  const handleCreateAlert = async (alertData: AlertFormData) => {
+    try {
+      const { alert: newAlert } = await alertService.createAlert(alertData);
+      setAlerts([newAlert, ...alerts]);
       setIsFormOpen(false);
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'Erreur lors de la création');
     }
   };
 
-  const handleDeleteAlert = (id: string) => {
+  const handleEditAlert = async (alertData: AlertFormData) => {
+    if (editingAlert) {
+      try {
+        const { alert: updatedAlert } = await alertService.updateAlert(editingAlert.id, alertData);
+        setAlerts(alerts.map((a) => (a.id === editingAlert.id ? updatedAlert : a)));
+        setEditingAlert(null);
+        setIsFormOpen(false);
+      } catch (err) {
+        window.alert(err instanceof Error ? err.message : 'Erreur lors de la modification');
+      }
+    }
+  };
+
+  const handleDeleteAlert = async (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette alerte?')) {
-      setAlerts(alerts.filter((a) => a.id !== id));
+      try {
+        await alertService.deleteAlert(id);
+        setAlerts(alerts.filter((a) => a.id !== id));
+      } catch (err) {
+        window.alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      }
     }
   };
 
-  const handleToggleActive = (id: string) => {
-    setAlerts(
-      alerts.map((a) =>
-        a.id === id ? { ...a, active: !a.active } : a
-      )
-    );
+  const handleToggleActive = async (id: string) => {
+    try {
+      const { alert: toggledAlert } = await alertService.toggleAlert(id);
+      setAlerts(alerts.map((a) => (a.id === id ? toggledAlert : a)));
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'Erreur lors du basculement');
+    }
+  };
+
+  const handleResetAlert = async (id: string) => {
+    try {
+      const { alert: resetAlertData } = await alertService.resetAlert(id);
+      setAlerts(alerts.map((a) => (a.id === id ? resetAlertData : a)));
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'Erreur lors de la réinitialisation');
+    }
   };
 
   return (
@@ -52,17 +86,33 @@ export function AlertsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-white text-2xl">Mes alertes</h2>
-          <button
-            onClick={() => {
-              setEditingAlert(null);
-              setIsFormOpen(true);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Nouvelle alerte
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadAlerts}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={() => {
+                setEditingAlert(null);
+                setIsFormOpen(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Nouvelle alerte
+            </button>
+          </div>
         </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+            <p className="text-red-400">{error}</p>
+          </div>
+        )}
 
         {/* Alert Form Modal */}
         {isFormOpen && (
@@ -83,8 +133,13 @@ export function AlertsPage() {
           </div>
         )}
 
-        {/* Alerts List */}
-        {alerts.length === 0 ? (
+        {/* Loading state */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <Loader2 className="w-12 h-12 text-blue-500 mx-auto mb-4 animate-spin" />
+            <p className="text-slate-400">Chargement des alertes...</p>
+          </div>
+        ) : alerts.length === 0 ? (
           <div className="text-center py-12">
             <Bell className="w-16 h-16 text-slate-600 mx-auto mb-4" />
             <p className="text-slate-400">Aucune alerte configurée</p>
@@ -117,20 +172,16 @@ export function AlertsPage() {
 
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-white">
+                      <span className="text-white font-medium">
                         {alert.crypto}
                       </span>
                       <span className="text-slate-400">
-                        {alert.condition === 'variation %' 
-                          ? `variation ${alert.condition} ${alert.threshold}%`
-                          : `${alert.condition} $${alert.threshold.toLocaleString()}`
-                        }
+                        {alert.condition} ${alert.threshold.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-slate-500">
                       <span className="flex items-center gap-1">
-                        {alert.notificationType === 'email' ? '📧' : '💬'} 
-                        {alert.notificationType}
+                        📧 Email
                       </span>
                       <span>Créée le {alert.createdAt}</span>
                       <span
@@ -142,11 +193,25 @@ export function AlertsPage() {
                       >
                         {alert.active ? 'Active' : 'Inactive'}
                       </span>
+                      {alert.triggered && (
+                        <span className="px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400">
+                          Déclenchée
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {alert.triggered && (
+                    <button
+                      onClick={() => handleResetAlert(alert.id)}
+                      title="Réinitialiser l'alerte"
+                      className="p-2 text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
+                    >
+                      <RefreshCw className="w-5 h-5" />
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setEditingAlert(alert);

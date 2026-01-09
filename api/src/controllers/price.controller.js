@@ -62,7 +62,8 @@ const getChartData = async (req, res, next) => {
     };
 
     const days = daysMap[range] || 30;
-    const data = await priceRepository.getPriceHistoryForChart(symbol, days);
+    const granularity = range === '24h' ? 'hour' : 'day';
+    const data = await priceRepository.getPriceHistoryForChart(symbol, days, granularity);
 
     if (!data.length) {
       return res.status(404).json({

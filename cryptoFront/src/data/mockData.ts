@@ -164,10 +164,10 @@ export function generateCandlestickData(basePrice: number, days: number): Candle
 export interface Alert {
   id: string;
   crypto: string;
-  condition: string;
+  condition: '>' | '<';
   threshold: number;
-  notificationType: string;
   active: boolean;
+  triggered: boolean;
   createdAt: string;
 }
 
@@ -177,8 +177,8 @@ export const mockAlerts: Alert[] = [
     crypto: 'BTC',
     condition: '>',
     threshold: 45000,
-    notificationType: 'email',
     active: true,
+    triggered: false,
     createdAt: '2025-12-20',
   },
   {
@@ -186,17 +186,17 @@ export const mockAlerts: Alert[] = [
     crypto: 'ETH',
     condition: '<',
     threshold: 2000,
-    notificationType: 'discord',
     active: true,
+    triggered: false,
     createdAt: '2025-12-18',
   },
   {
     id: '3',
     crypto: 'SOL',
-    condition: 'variation %',
-    threshold: 10,
-    notificationType: 'email',
+    condition: '>',
+    threshold: 100,
     active: false,
+    triggered: true,
     createdAt: '2025-12-15',
   },
 ];

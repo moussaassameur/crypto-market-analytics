@@ -5,12 +5,11 @@ import { Dashboard } from './components/dashboard/Dashboard';
 import { CryptoList } from './components/crypto/CryptoList';
 import { AlertsPage } from './components/alerts/AlertsPage';
 import { PortfolioPage } from './components/portfolio/PortfolioPage';
-import { AnalysisPage } from './components/analysis/AnalysisPage';
 import { ForecastPage } from './components/forecast/ForecastPage';
 import { Navigation } from './components/shared/Navigation';
 import { authService } from './services/authService';
 
-type Page = 'login' | 'register' | 'dashboard' | 'cryptos' | 'alerts' | 'portfolio' | 'analysis' | 'forecast';
+type Page = 'login' | 'register' | 'dashboard' | 'cryptos' | 'alerts' | 'portfolio' | 'forecast';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('login');
@@ -75,7 +74,6 @@ export default function App() {
         {currentPage === 'cryptos' && <CryptoList />}
         {currentPage === 'alerts' && <AlertsPage />}
         {currentPage === 'portfolio' && <PortfolioPage />}
-        {currentPage === 'analysis' && <AnalysisPage />}
         {currentPage === 'forecast' && <ForecastPage />}
       </main>
     </div>
