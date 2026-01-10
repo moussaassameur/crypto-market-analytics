@@ -79,7 +79,7 @@ jobs:
         RABBITMQ_URL: amqp://guest:guest@localhost:5672
 
     - name: Upload Coverage Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: coverage-report
@@ -131,7 +131,7 @@ jobs:
       continue-on-error: true
 
     - name: Upload Security Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-report
@@ -161,7 +161,7 @@ jobs:
       run: npm run build
 
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-build
         path: cryptoFront/dist/
@@ -281,7 +281,7 @@ jobs:
         API_URL: http://localhost:3000
 
     - name: Upload Performance Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: performance-results
