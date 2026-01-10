@@ -314,7 +314,7 @@ jobs:
     name: Build Docker Images
     runs-on: ubuntu-latest
     needs: [backend-tests, frontend-build, collector-test, security-scan]
-    if: false  # Temporairement désactivé - configurer DOCKER_USERNAME et DOCKER_PASSWORD secrets
+    if: github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout Code
@@ -367,7 +367,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docker
     environment: staging
-    if: false  # Désactivé car Docker build est désactivé
+    if: github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout Code
@@ -392,7 +392,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: performance-tests  # Supprimé deploy-staging des dépendances
     environment: production
-    if: false  # Désactivé car Docker build est désactivé
+    if: github.ref == 'refs/heads/main'  # Active seulement sur main
 
     steps:
     - name: Checkout Code
