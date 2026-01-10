@@ -248,8 +248,12 @@ jobs:
     - name: Start API Server
       working-directory: ./api
       run: |
+        echo "Starting API server..."
         npm start &
-        sleep 10
+        API_PID=$!
+        echo "API_PID=$API_PID" >> $GITHUB_ENV
+        echo "API started with PID: $API_PID"
+        sleep 15  # Augmenté à 15 secondes
       env:
         NODE_ENV: test
         DB_HOST: localhost
@@ -271,14 +275,23 @@ jobs:
     - name: Wait for API Ready
       run: |
         echo "Waiting for API to be ready..."
-        for i in {1..30}; do
-          if curl -f http://localhost:3000/api/health; then
-            echo "API is ready"
+        for i in {1..60}; do
+          if curl -f http://localhost:3000/api/health 2>/dev/null; then
+            echo "✅ API is ready after $i attempts"
+            curl -s http://localhost:3000/api/health | jq . || echo "API health response received"
             break
           fi
-          echo "Waiting... ($i/30)"
+          echo "⏳ Waiting... ($i/60)"
           sleep 2
         done
+        
+        # Vérification finale
+        if ! curl -f http://localhost:3000/api/health 2>/dev/null; then
+          echo "❌ API health check failed after 2 minutes"
+          echo "📋 API Logs:"
+          ps aux | grep node || echo "No node processes found"
+          exit 1
+        fi
 
     - name: Run Performance Tests
       working-directory: ./api
@@ -301,7 +314,7 @@ jobs:
     name: Build Docker Images
     runs-on: ubuntu-latest
     needs: [backend-tests, frontend-build, collector-test, security-scan]
-    if: github.ref == 'refs/heads/main' && secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD
+    if: false  # Temporairement désactivé - configurer DOCKER_USERNAME et DOCKER_PASSWORD secrets
 
     steps:
     - name: Checkout Code
@@ -354,7 +367,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docker
     environment: staging
-    if: github.ref == 'refs/heads/main' && needs.build-docker.result == 'success'
+    if: false  # Désactivé car Docker build est désactivé
 
     steps:
     - name: Checkout Code
@@ -377,9 +390,9 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [deploy-staging, performance-tests]
+    needs: performance-tests  # Supprimé deploy-staging des dépendances
     environment: production
-    if: github.ref == 'refs/heads/main' && (needs.deploy-staging.result == 'success' || needs.deploy-staging.result == 'skipped')
+    if: false  # Désactivé car Docker build est désactivé
 
     steps:
     - name: Checkout Code
