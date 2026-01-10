@@ -15,6 +15,30 @@ CREATE TABLE IF NOT EXISTS users (
 -- Index pour optimiser les requêtes par email
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
+-- Création de la table cryptos (pour les symboles de cryptomonnaies)
+CREATE TABLE IF NOT EXISTS cryptos (
+    id SERIAL PRIMARY KEY,
+    symbol VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Index pour optimiser les requêtes par symbol
+CREATE INDEX IF NOT EXISTS idx_cryptos_symbol ON cryptos(symbol);
+
+-- Création de la table prices (prix historiques des cryptomonnaies)
+CREATE TABLE IF NOT EXISTS prices (
+    id SERIAL PRIMARY KEY,
+    crypto_id INTEGER NOT NULL REFERENCES cryptos(id) ON DELETE CASCADE,
+    price NUMERIC(20, 8) NOT NULL,
+    collected_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Index pour optimiser les requêtes prices
+CREATE INDEX IF NOT EXISTS idx_prices_crypto_id ON prices(crypto_id);
+CREATE INDEX IF NOT EXISTS idx_prices_collected_at ON prices(collected_at);
+CREATE INDEX IF NOT EXISTS idx_prices_crypto_collected ON prices(crypto_id, collected_at DESC);
+
 -- Création de la table alerts
 CREATE TABLE IF NOT EXISTS alerts (
     id SERIAL PRIMARY KEY,
@@ -52,8 +76,28 @@ CREATE TABLE IF NOT EXISTS portfolio_transactions (
 CREATE INDEX IF NOT EXISTS idx_portfolio_user_id ON portfolio_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_portfolio_symbol ON portfolio_transactions(symbol);
 
+-- Insertion de quelques cryptos de test pour les tests
+INSERT INTO cryptos (symbol, name) VALUES 
+('BTC', 'Bitcoin'),
+('ETH', 'Ethereum'),
+('ADA', 'Cardano'),
+('DOT', 'Polkadot'),
+('SOL', 'Solana')
+ON CONFLICT (symbol) DO NOTHING;
+
+-- Insertion de prix de test (optionnel pour les tests)
+INSERT INTO prices (crypto_id, price, collected_at) 
+SELECT c.id, 50000.00, NOW() - INTERVAL '1 hour' FROM cryptos c WHERE c.symbol = 'BTC'
+UNION ALL
+SELECT c.id, 3000.00, NOW() - INTERVAL '1 hour' FROM cryptos c WHERE c.symbol = 'ETH'
+UNION ALL  
+SELECT c.id, 1.50, NOW() - INTERVAL '1 hour' FROM cryptos c WHERE c.symbol = 'ADA'
+ON CONFLICT DO NOTHING;
+
 -- Commentaires pour la documentation
 COMMENT ON TABLE users IS 'Table des utilisateurs de la plateforme';
+COMMENT ON TABLE cryptos IS 'Table des cryptomonnaies disponibles';
+COMMENT ON TABLE prices IS 'Table des prix historiques des cryptomonnaies';
 COMMENT ON TABLE alerts IS 'Table des alertes de prix configurées par les utilisateurs';
 COMMENT ON TABLE portfolio_transactions IS 'Table des transactions de portefeuille des utilisateurs';
 
