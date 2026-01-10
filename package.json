@@ -1,4 +1,20 @@
 {
+  "name": "crypto-platform",
+  "version": "1.0.0",
+  "description": "Plateforme de trading crypto avec pipeline CI/CD",
+  "scripts": {
+    "install:all": "npm install && cd api && npm install && cd ../cryptoFront && npm install && cd ../collector && npm install",
+    "test:all": "cd api && npm test && npm run test:integration",
+    "build:all": "cd api && npm run build && cd ../cryptoFront && npm run build",
+    "start:dev": "docker-compose up -d",
+    "stop:dev": "docker-compose down",
+    "ci:test": "npm run test:all",
+    "ci:security": "cd api && npm run security:all",
+    "ci:performance": "cd api && npm run k6:all"
+  },
+  "keywords": ["crypto", "trading", "nodejs", "react", "docker", "ci-cd"],
+  "author": "Moussa",
+  "license": "MIT",
   "dependencies": {
     "node-cron": "^4.2.1"
   }
