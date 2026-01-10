@@ -1,10 +1,10 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { login } = require("../controllers/auth.controller");
-const userRepo = require("../repositories/user.repository");
+const { login } = require("../../src/controllers/auth.controller");
+const userRepo = require("../../src/repositories/user.repository");
 
 // Mock dependencies
-jest.mock("../repositories/user.repository");
+jest.mock("../../src/repositories/user.repository");
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");
 

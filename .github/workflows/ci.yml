@@ -57,6 +57,9 @@ jobs:
       run: |
         echo "Setting up test database..."
         sleep 5
+        echo "Creating database tables..."
+        PGPASSWORD=testpassword psql -h localhost -p 5433 -U postgres -d crypto_test -f scripts/init-database.sql
+        echo "Database setup completed"
       env:
         NODE_ENV: test
         DB_HOST: localhost
@@ -234,6 +237,13 @@ jobs:
     - name: Install Dependencies
       working-directory: ./api
       run: npm ci
+
+    - name: Setup Database Tables
+      working-directory: ./api
+      run: |
+        echo "Creating database tables for performance tests..."
+        PGPASSWORD=testpassword psql -h localhost -p 5433 -U postgres -d crypto_test -f scripts/init-database.sql
+        echo "Database setup completed"
 
     - name: Start API Server
       working-directory: ./api

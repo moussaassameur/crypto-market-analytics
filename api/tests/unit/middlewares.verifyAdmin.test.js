@@ -1,4 +1,4 @@
-const verifyAdmin = require("../middlewares/verifyAdmin");
+const verifyAdmin = require("../../src/middlewares/verifyAdmin");
 
 describe("verifyAdmin middleware", () => {
   let req, res, next;

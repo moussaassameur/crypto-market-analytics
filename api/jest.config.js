@@ -8,7 +8,8 @@ module.exports = {
   ],
   testMatch: [
     "**/__tests__/**/*.test.js",
-    "**/tests/integration/**/*.test.js"
+    "**/tests/integration/**/*.test.js",
+    "**/tests/unit/**/*.test.js"
   ],
   clearMocks: true,
   resetMocks: true,
