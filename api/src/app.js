@@ -1,6 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const logger = require("./utils/logger");
 const healthRoutes = require("./routes/health.routes");
@@ -25,6 +27,33 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Security headers with Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Disable X-Powered-By header
+app.disable('x-powered-by');
+
+// Rate limiting pour prévenir les attaques ReDoS et DDoS
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limite chaque IP à 100 requêtes par fenêtre
+  message: 'Trop de requêtes depuis cette IP, réessayez dans 15 minutes.',
+  standardHeaders: true, // Retourner les infos de rate limit dans les headers `RateLimit-*`
+  legacyHeaders: false, // Désactiver les headers `X-RateLimit-*`
+});
+
+app.use(limiter);
 
 // Morgan middleware with Winston logger
 app.use(

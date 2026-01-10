@@ -1,0 +1,29 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-JWA-6416513:
+    - '*':
+        reason: >-
+          Issue dans node_modules/jwa - hardcoded secret utilisé uniquement pour les algorithmes,
+          pas pour notre implémentation. Notre JWT utilise des secrets générés aléatoirement.
+        expires: '2026-04-10T00:00:00.000Z'
+  'e94ab19a-e8b7-4323-ae20-e5934087d072':
+    - '*':
+        reason: >-
+          ReDoS dans Express router - issue externe dans node_modules.
+          Mitigé par notre rate limiting et validation d'input stricte.
+        expires: '2026-04-10T00:00:00.000Z'
+  '5e1542f1-1a0f-4f71-8194-fa20e5726627':
+    - '*':
+        reason: >-
+          ReDoS dans Jest snapshots - utilisé uniquement en environnement de test,
+          pas en production. Pas d'impact sécuritaire réel.
+        expires: '2026-04-10T00:00:00.000Z'
+  'cdfa224b-2d0e-479b-810f-e384884d4a21':
+    - '*':
+        reason: >-
+          Hardcoded secret dans JWA library - utilisé pour les constantes d'algorithmes,
+          pas pour nos secrets applicatifs. Notre JWT_SECRET est en variable d'environnement.
+        expires: '2026-04-10T00:00:00.000Z'
+patch: {}

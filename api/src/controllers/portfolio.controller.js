@@ -15,12 +15,26 @@ const formatTransactionForFrontend = (tx) => {
 };
 
 const parseTransactionFromFrontend = (body) => {
+  // Validation stricte pour éviter la pollution de prototype
+  if (!body || typeof body !== 'object' || body.constructor !== Object) {
+    throw new Error('Invalid input format');
+  }
+  
+  // Validation des champs requis avec vérification de type
+  const validateField = (value, type) => {
+    if (value === null || value === undefined) return null;
+    if (type === 'string' && typeof value !== 'string') return null;
+    if (type === 'number' && (typeof value !== 'number' && isNaN(Number(value)))) return null;
+    return value;
+  };
+
   return {
-    type: body.type === 'achat' ? 'BUY' : body.type === 'vente' ? 'SELL' : body.type?.toUpperCase(),
-    symbol: (body.crypto || body.symbol)?.toUpperCase(),
-    quantity: body.amount || body.quantity,
-    unit_price: body.price || body.unit_price,
-    date: body.date
+    type: body.type === 'achat' ? 'BUY' : body.type === 'vente' ? 'SELL' : 
+          validateField(body.type, 'string')?.toUpperCase(),
+    symbol: validateField(body.crypto || body.symbol, 'string')?.toUpperCase(),
+    quantity: validateField(body.amount || body.quantity, 'number'),
+    unit_price: validateField(body.price || body.unit_price, 'number'),
+    date: validateField(body.date, 'string')
   };
 };
 
