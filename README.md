@@ -1,27 +1,7 @@
 # Crypto Market Analytics
 
-[![CI Tests](https://github.com/USERNAME/crypto-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/crypto-platform/actions/workflows/ci.yml)
-[![CD Deploy](https://github.com/USERNAME/crypto-platform/actions/workflows/cd.yml/badge.svg)](https://github.com/USERNAME/crypto-platform/actions/workflows/cd.yml)
-[![Performance](https://github.com/USERNAME/crypto-platform/actions/workflows/performance.yml/badge.svg)](https://github.com/USERNAME/crypto-platform/actions/workflows/performance.yml)
-[![Security](https://snyk.io/test/github/USERNAME/crypto-platform/badge.svg)](https://snyk.io/test/github/USERNAME/crypto-platform)
-
 Ce projet consiste à concevoir et développer une plateforme complète de suivi,
-d'analyse et de prévision des marchés de cryptomonnaies avec pipeline CI/CD automatisé.
-
-## Pipeline CI/CD
-
-| Workflow | Trigger | Durée | Description |
-|----------|---------|-------|-------------|
-| **CI Tests** | Push/PR | ~5min | Tests unitaires + intégration + sécurité |
-| **CD Deploy** | Merge main | ~3min | Build Docker + déploiement staging/prod |
-| **Performance** | Nightly/Manual | ~10min | Tests K6 de performance |
-
-## Status Qualité
-
-- Tests: 105 tests d'intégration + 63 tests de sécurité
-- Couverture: >80% du code applicatif
-- Sécurité: Scan Snyk automatique + 0 vulnérabilité critique
-- Performance: Support 800+ utilisateurs concurrent
+d’analyse et de prévision des marchés de cryptomonnaies.
 
 ## Objectifs
 

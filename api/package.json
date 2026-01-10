@@ -11,6 +11,8 @@
     "test:integration": "set NODE_ENV=test&& jest tests/integration --runInBand --forceExit",
     "test:coverage": "jest --coverage",
     "test:all": "npm run test:integration && npm test",
+    "ci:test": "set NODE_ENV=test&& jest --runInBand --forceExit --coverage",
+    "ci:test:integration": "set NODE_ENV=test&& jest tests/integration --runInBand --forceExit",
     "k6:smoke": "k6 run tests/k6/smoke-test.js",
     "k6:load": "k6 run tests/k6/load-test.js",
     "k6:stress": "k6 run tests/k6/stress-test.js",
