@@ -10,7 +10,12 @@
     "test:watch": "jest --watch",
     "test:integration": "set NODE_ENV=test&& jest tests/integration --runInBand --forceExit",
     "test:coverage": "jest --coverage",
-    "test:all": "npm run test:integration && npm test"
+    "test:all": "npm run test:integration && npm test",
+    "k6:smoke": "k6 run tests/k6/smoke-test.js",
+    "k6:load": "k6 run tests/k6/load-test.js",
+    "k6:stress": "k6 run tests/k6/stress-test.js",
+    "k6:spike": "k6 run tests/k6/spike-test.js",
+    "k6:all": "npm run k6:smoke && npm run k6:load && npm run k6:stress && npm run k6:spike"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
