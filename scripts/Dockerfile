@@ -11,20 +11,16 @@ RUN apk add --no-cache bash dcron postgresql16-client
 RUN mkdir -p /backups /scripts /var/log && \
     chown -R backupuser:backupgroup /backups /scripts /var/log
 
-# Copier les scripts
-COPY --chown=backupuser:backupgroup backup.sh /scripts/backup.sh
-COPY --chown=backupuser:backupgroup restore.sh /scripts/restore.sh
-COPY --chown=backupuser:backupgroup backup-config.sh /scripts/backup-config.sh
-
-# Rendre les scripts exécutables
-RUN chmod +x /scripts/*.sh
+# Copier les scripts (lecture + exécution uniquement, pas d'écriture)
+COPY --chmod=555 --chown=backupuser:backupgroup backup.sh /scripts/backup.sh
+COPY --chmod=555 --chown=backupuser:backupgroup restore.sh /scripts/restore.sh
+COPY --chmod=555 --chown=backupuser:backupgroup backup-config.sh /scripts/backup-config.sh
 
 # Créer le cron job pour backup automatique (tous les jours à minuit)
 RUN echo "0 0 * * * /scripts/backup.sh >> /var/log/backup.log 2>&1" > /etc/crontabs/backupuser
 
-# Script d'entrée
-COPY --chown=backupuser:backupgroup entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Script d'entrée (lecture + exécution uniquement, pas d'écriture)
+COPY --chmod=555 --chown=backupuser:backupgroup entrypoint.sh /entrypoint.sh
 
 # Utiliser l'utilisateur non-root
 USER backupuser
