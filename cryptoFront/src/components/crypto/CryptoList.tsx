@@ -129,21 +129,29 @@ export function CryptoList() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-800">
-                <th className="text-left py-4 px-4 text-slate-400">#</th>
+                <th className="text-left py-4 px-4 text-slate-400 w-16">#</th>
                 <th className="text-left py-4 px-4 text-slate-400">
                   <SortButton field="name">Nom</SortButton>
                 </th>
                 <th className="text-right py-4 px-4 text-slate-400">
-                  <SortButton field="price">Prix</SortButton>
+                  <div className="flex justify-end">
+                    <SortButton field="price">Prix</SortButton>
+                  </div>
                 </th>
                 <th className="text-right py-4 px-4 text-slate-400">
-                  <SortButton field="change_24h">24h %</SortButton>
+                  <div className="flex justify-end">
+                    <SortButton field="change_24h">24h %</SortButton>
+                  </div>
                 </th>
                 <th className="text-right py-4 px-4 text-slate-400">
-                  <SortButton field="volume_24h">Volume 24h</SortButton>
+                  <div className="flex justify-end">
+                    <SortButton field="volume_24h">Volume 24h</SortButton>
+                  </div>
                 </th>
                 <th className="text-right py-4 px-4 text-slate-400">
-                  <SortButton field="market_cap">Cap. marché</SortButton>
+                  <div className="flex justify-end">
+                    <SortButton field="market_cap">Cap. marché</SortButton>
+                  </div>
                 </th>
               </tr>
             </thead>

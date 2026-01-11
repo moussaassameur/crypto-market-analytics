@@ -33,16 +33,6 @@ export const cryptoList: CryptoData[] = [
     image: 'Ξ'
   },
   {
-    id: 'bnb',
-    symbol: 'BNB',
-    name: 'BNB',
-    price: 315.20,
-    change24h: 3.67,
-    volume24h: 1800000000,
-    marketCap: 48500000000,
-    image: 'B'
-  },
-  {
     id: 'solana',
     symbol: 'SOL',
     name: 'Solana',
@@ -51,47 +41,7 @@ export const cryptoList: CryptoData[] = [
     volume24h: 2400000000,
     marketCap: 42000000000,
     image: 'S'
-  },
-  {
-    id: 'cardano',
-    symbol: 'ADA',
-    name: 'Cardano',
-    price: 0.52,
-    change24h: -2.15,
-    volume24h: 650000000,
-    marketCap: 18200000000,
-    image: 'A'
-  },
-  {
-    id: 'ripple',
-    symbol: 'XRP',
-    name: 'Ripple',
-    price: 0.61,
-    change24h: 1.85,
-    volume24h: 1200000000,
-    marketCap: 33000000000,
-    image: 'X'
-  },
-  {
-    id: 'polkadot',
-    symbol: 'DOT',
-    name: 'Polkadot',
-    price: 7.32,
-    change24h: -0.89,
-    volume24h: 380000000,
-    marketCap: 9500000000,
-    image: 'D'
-  },
-  {
-    id: 'dogecoin',
-    symbol: 'DOGE',
-    name: 'Dogecoin',
-    price: 0.085,
-    change24h: 4.23,
-    volume24h: 890000000,
-    marketCap: 12000000000,
-    image: 'Ð'
-  },
+  }
 ];
 
 export interface PricePoint {

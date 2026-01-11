@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
-import { cryptoList } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { marketService } from '../../services/marketService';
+
+interface Crypto {
+  symbol: string;
+  name: string;
+}
 
 export interface AlertFormData {
   crypto: string;
@@ -19,6 +24,22 @@ export function AlertForm({ initialData, onSubmit, onCancel }: AlertFormProps) {
   const [condition, setCondition] = useState<'>' | '<'>(initialData?.condition || '>');
   const [threshold, setThreshold] = useState(initialData?.threshold?.toString() || '');
   const [active, setActive] = useState(initialData?.active ?? true);
+  const [cryptoList, setCryptoList] = useState<Crypto[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCryptos = async () => {
+      try {
+        const data = await marketService.getLatestCryptos();
+        setCryptoList(data);
+      } catch (error) {
+        console.error('Erreur lors du chargement des cryptos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCryptos();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,10 +67,11 @@ export function AlertForm({ initialData, onSubmit, onCancel }: AlertFormProps) {
           onChange={(e) => setCrypto(e.target.value)}
           className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
+          disabled={loading}
         >
-          <option value="">Sélectionner...</option>
+          <option value="">{loading ? 'Chargement...' : 'Sélectionner...'}</option>
           {cryptoList.map((c) => (
-            <option key={c.id} value={c.symbol}>
+            <option key={c.symbol} value={c.symbol}>
               {c.name} ({c.symbol})
             </option>
           ))}
