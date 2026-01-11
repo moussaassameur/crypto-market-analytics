@@ -167,7 +167,6 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       continue-on-error: true
-      if: ${{ secrets.SNYK_TOKEN != '' }}
 
     - name: Snyk Code Test
       working-directory: ./api
@@ -175,7 +174,6 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       continue-on-error: true
-      if: ${{ secrets.SNYK_TOKEN != '' }}
 
     - name: Security Summary
       working-directory: ./api
