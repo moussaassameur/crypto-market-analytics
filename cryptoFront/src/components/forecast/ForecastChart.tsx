@@ -46,7 +46,7 @@ export function ForecastChart({ historicalData, forecastData }: ForecastChartPro
 
   // Find the transition point (last historical data point)
   const transitionIndex = historicalData.slice(-14).length - 1;
-  const transitionTime = historicalData[historicalData.length - 1].time;
+  const transitionTime = historicalData.at(-1)!.time;
 
   return (
     <ResponsiveContainer width="100%" height={400}>
