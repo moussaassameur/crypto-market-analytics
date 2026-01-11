@@ -1,0 +1,71 @@
+groups:
+  - name: crypto-platform-alerts
+    rules:
+      # API indisponible
+      - alert: ApiDown
+        expr: up{job="crypto-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API Crypto indisponible"
+          description: "L'API crypto n'est pas accessible depuis plus d'1 minute."
+
+      # Taux d'erreurs HTTP élevé (> 5%)
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status_code=~"5.."}[5m])) 
+            / 
+            sum(rate(http_requests_total[5m]))
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taux d'erreurs HTTP élevé"
+          description: "Plus de 5% des requêtes retournent une erreur 5xx."
+
+      # Temps de réponse lent (> 1s en moyenne)
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Temps de réponse lent"
+          description: "Le 95ème percentile du temps de réponse dépasse 1 seconde."
+
+      # Beaucoup de connexions actives
+      - alert: HighActiveConnections
+        expr: active_connections > 100
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nombre élevé de connexions actives"
+          description: "Plus de 100 connexions actives détectées."
+
+      # Augmentation soudaine des erreurs
+      - alert: ErrorSpike
+        expr: |
+          increase(errors_total[5m]) > 50
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pic d'erreurs détecté"
+          description: "Plus de 50 erreurs en 5 minutes."
+
+      # Alertes crypto déclenchées
+      - alert: CryptoAlertsTriggered
+        expr: increase(alerts_triggered_total[1h]) > 100
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Beaucoup d'alertes crypto déclenchées"
+          description: "Plus de 100 alertes de prix crypto déclenchées dans la dernière heure."

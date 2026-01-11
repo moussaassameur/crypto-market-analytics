@@ -91,8 +91,27 @@ class AuthService {
     return this.getToken() !== null;
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
+    const token = this.getToken();
+    console.log('[AuthService] Logout called, token:', token ? 'exists' : 'none');
+    if (token) {
+      try {
+        console.log('[AuthService] Calling logout endpoint:', `${API_BASE_URL}/auth/logout`);
+        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('[AuthService] Logout response status:', response.status);
+      } catch (error) {
+        // Ignore les erreurs réseau, on supprime le token quand même
+        console.error('[AuthService] Erreur lors de la déconnexion:', error);
+      }
+    }
     this.removeToken();
+    console.log('[AuthService] Token removed');
   }
 }
 

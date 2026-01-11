@@ -30,3 +30,53 @@ Le diagramme d’architecture détaillé se trouve dans `docs/architecture.png`.
 - Méthodologie : Agile (backlog + sprints)
 - Sprint 0 : initialisation du projet et conception (architecture + UML)
 - Sprints suivants : implémentation de l’API, du collector, de la webapp, des tests, de la CI/CD et du déploiement Docker/Kubernetes.
+## 📊 Monitoring (Prometheus + Grafana)
+
+La plateforme intègre une stack d'observabilité complète :
+
+### Services
+
+| Service    | Port  | URL                     |
+|------------|-------|-------------------------|
+| Prometheus | 9090  | http://localhost:9090   |
+| Grafana    | 3002  | http://localhost:3002   |
+
+### Démarrage du monitoring
+
+```powershell
+# Démarrer uniquement Prometheus et Grafana
+docker-compose up -d prometheus grafana
+
+# Ou utiliser le script dédié
+.\scripts\start-monitoring.ps1
+```
+
+### Métriques collectées
+
+L'API expose les métriques suivantes sur `/metrics` :
+
+- **http_requests_total** : Nombre total de requêtes HTTP (par méthode, route, code)
+- **http_request_duration_seconds** : Durée des requêtes (histogramme)
+- **active_connections** : Connexions WebSocket actives
+- **alerts_triggered_total** : Alertes de prix déclenchées
+- **crypto_price_usd** : Prix des cryptomonnaies en USD
+- **errors_total** : Nombre total d'erreurs
+- **active_users** : Utilisateurs actuellement connectés
+- **portfolio_transactions_total** : Transactions de portefeuille
+
+### Alertes configurées
+
+| Alerte                 | Condition                          | Sévérité  |
+|------------------------|-----------------------------------|-----------|
+| ApiDown               | API indisponible > 1 min          | Critical  |
+| HighErrorRate         | Erreurs 5xx > 5%                  | Warning   |
+| SlowResponseTime      | P95 latence > 1s                  | Warning   |
+| HighActiveConnections | Connexions > 100                  | Warning   |
+| ErrorSpike            | > 50 erreurs en 5 min             | Critical  |
+
+### Identifiants Grafana
+
+- **Utilisateur** : admin
+- **Mot de passe** : admin (par défaut)
+
+Le dashboard "Crypto Platform Dashboard" est automatiquement provisionné.

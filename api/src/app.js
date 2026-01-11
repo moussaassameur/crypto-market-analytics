@@ -5,6 +5,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
 const logger = require("./utils/logger");
+const metricsMiddleware = require("./middlewares/metricsMiddleware");
+const metricsRoutes = require("./routes/metrics.routes");
 const healthRoutes = require("./routes/health.routes");
 const dbHealthRoutes = require("./routes/dbHealth.routes");
 const cryptoRoutes = require("./routes/crypto.routes");
@@ -55,6 +57,9 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+// Middleware de métriques Prometheus
+app.use(metricsMiddleware);
+
 // Morgan middleware with Winston logger
 app.use(
   morgan("combined", {
@@ -65,6 +70,9 @@ app.use(
 );
 
 app.use(express.json());
+
+// Route des métriques Prometheus (sans authentification)
+app.use("/metrics", metricsRoutes);
 
 app.use("/api", healthRoutes);
 app.use("/api", dbHealthRoutes);

@@ -30,8 +30,8 @@ export default function App() {
     setCurrentPage('dashboard');
   };
 
-  const handleLogout = () => {
-    authService.logout();
+  const handleLogout = async () => {
+    await authService.logout();
     setUser(null);
     setIsAuthenticated(false);
     setCurrentPage('login');

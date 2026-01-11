@@ -57,6 +57,8 @@ services:
   collector:
     build: ./collector
     container_name: crypto-collector
+    ports:
+      - "9091:9091"
     environment:
       PGHOST: postgres
       PGPORT: 5432
@@ -68,6 +70,7 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       EMAIL_FROM: ${EMAIL_FROM}
+      METRICS_PORT: 9091
     depends_on:
       postgres:
         condition: service_healthy
@@ -108,6 +111,51 @@ services:
     networks:
       - crypto-network
 
+  # Prometheus - Collecte de métriques
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: crypto-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - crypto-network
+
+  # Grafana - Visualisation des métriques
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: crypto-grafana
+    ports:
+      - "3002:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - crypto-network
+
 networks:
   crypto-network:
     driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

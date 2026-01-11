@@ -1,6 +1,7 @@
 const db = require("./db");
 const emailService = require("./emailService");
 const logger = require("./logger");
+const { cryptoPrices } = require("./metrics");
 
 // Mapping entre les symboles et les IDs CoinGecko
 const SYMBOL_MAP = {

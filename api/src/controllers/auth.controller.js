@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userRepo = require("../repositories/user.repository");
+const { userConnected, userDisconnected } = require("../services/metrics.service");
 
 const register = async (req, res, next) => {
   try {
@@ -75,10 +76,27 @@ const login = async (req, res, next) => {
   { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
 );
 
+    // Marquer l'utilisateur comme connecté
+    userConnected(user.id);
+
     return res.json({ token });
   } catch (e) {
     next(e);
   }
 };
 
-module.exports = { register, login };
+// Fonction de logout
+const logout = async (req, res, next) => {
+  try {
+    // req.user est ajouté par le middleware verifyToken
+    if (req.user && req.user.sub) {
+      userDisconnected(req.user.sub);
+    }
+    
+    return res.json({ message: "Déconnexion réussie" });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { register, login, logout };

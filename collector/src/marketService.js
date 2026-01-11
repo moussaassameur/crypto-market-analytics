@@ -2,6 +2,7 @@ const axios = require("axios");
 const db = require("./db");
 const logger = require("./logger");
 const alertService = require("./alertService");
+const { cryptoPrices, collectionsTotal, collectionErrors, collectionDuration } = require("./metrics");
 
 const COINS = ["bitcoin", "ethereum", "solana"];
 const VS_CURRENCY = "usd";
@@ -48,6 +49,7 @@ async function saveMarketData(coin) {
 // Récupère et sauvegarde les données de marché
 async function fetchMarketData() {
   const url = "https://api.coingecko.com/api/v3/coins/markets";
+  const end = collectionDuration.startTimer();
 
   try {
     const response = await axios.get(url, {
@@ -73,7 +75,17 @@ async function fetchMarketData() {
       console.log(`Variation 24h   : ${coin.price_change_percentage_24h}%`);
 
       await saveMarketData(coin);
+
+      // Mettre à jour les métriques Prometheus
+      const symbol = coin.symbol.toUpperCase();
+      cryptoPrices.set(
+        { symbol: symbol, name: coin.name },
+        coin.current_price
+      );
     }
+
+    // Incrémenter le compteur de collectes réussies
+    collectionsTotal.inc();
 
     // Vérifier et déclencher les alertes après avoir collecté les données
     console.log("\n🔍 === Vérification des alertes ===");
@@ -83,9 +95,14 @@ async function fetchMarketData() {
     } catch (alertError) {
       console.error("❌ Erreur lors de la vérification des alertes:", alertError.message);
       console.error(alertError.stack);
+      collectionErrors.inc({ type: 'alert_processing' });
     }
+
+    end();
   } catch (err) {
     console.error("Erreur lors de la récupération des données du marché :", err.message);
+    collectionErrors.inc({ type: 'market_fetch' });
+    end();
   }
 }
 
