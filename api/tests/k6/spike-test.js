@@ -1,14 +1,3 @@
-/**
- * Test de Pic (Spike Testing)
- * 
- * Objectif : Simuler un pic de trafic soudain
- * Scénario : Bitcoin monte à 100k$ et tout le monde arrive en même temps
- * 
- * Ce test vérifie :
- * - La résilience face à un trafic soudain
- * - Le temps de récupération après le pic
- * - La stabilité sous charge extrême instantanée
- */
 
 import http from 'k6/http';
 import { check, sleep } from 'k6';
@@ -50,8 +39,8 @@ export const options = {
 const BASE_URL = __ENV.API_URL || 'http://localhost:3000';
 
 export function setup() {
-  console.log('⚡ Démarrage du test de spike');
-  console.log('🎯 Simulation : Événement crypto viral');
+  console.log(' Démarrage du test de spike');
+  console.log(' Simulation : Événement crypto viral');
   
   return { baseUrl: BASE_URL };
 }

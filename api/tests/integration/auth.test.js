@@ -1,13 +1,3 @@
-/**
- * Tests d'intégration - Authentification
- * 
- * Scénarios testés:
- * - POST /api/auth/register -> 201 (succès)
- * - POST /api/auth/register -> 409 (email déjà utilisé)
- * - POST /api/auth/login -> 200 + token
- * - POST /api/auth/login -> 401 (mauvais password)
- */
-
 const { app, resetDb, closeDb, request, generateUniqueUser } = require("./testUtils");
 
 describe("Auth Integration Tests", () => {

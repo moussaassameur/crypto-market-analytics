@@ -1,15 +1,3 @@
-/**
- * Tests d'intégration - Alertes
- * 
- * Scénarios testés:
- * - POST /api/alerts sans token -> 401
- * - POST /api/alerts avec token -> 201 + alerte créée
- * - GET /api/alerts -> 200 + liste des alertes
- * - PUT /api/alerts/:id -> 200 update (threshold/active)
- * - DELETE /api/alerts/:id -> 200 supprime
- * - POST /api/alerts/check -> déclenchement avec mock notification
- */
-
 const { app, resetDb, closeDb, getToken, request, db } = require("./testUtils");
 const alertController = require("../../src/controllers/alert.controller");
 

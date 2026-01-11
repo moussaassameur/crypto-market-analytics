@@ -1,0 +1,19 @@
+# NOTE: ClusterIssuer désactivé pour .local
+# Let's Encrypt ne fonctionne pas avec les domaines .local
+# Décommentez et configurez si vous utilisez un vrai domaine (.com, .net, etc.)
+
+# apiVersion: cert-manager.io/v1
+# kind: ClusterIssuer
+# metadata:
+#   name: letsencrypt-prod
+# spec:
+#   acme:
+#     # Email pour les notifications Let's Encrypt
+#     email: votre-email@example.com  # CHANGER AVEC VOTRE EMAIL
+#     server: https://acme-v02.api.letsencrypt.org/directory
+#     privateKeySecretRef:
+#       name: letsencrypt-prod-key
+#     solvers:
+#     - http01:
+#         ingress:
+#           class: nginx
