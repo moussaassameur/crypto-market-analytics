@@ -38,10 +38,10 @@ describe("forecast.controller", () => {
       expect(forecastRepository.getPriceHistoryForForecast).toHaveBeenCalledWith("BTC", 90);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          symbol: "btc",
+          symbol: "BTC",
           model: "combined",
-          confidence: expect.any(String),
-          forecast: expect.arrayContaining([
+          averageConfidence: expect.any(Number),
+          forecasts: expect.arrayContaining([
             expect.objectContaining({
               date: expect.any(String),
               price: expect.any(Number),
@@ -53,9 +53,7 @@ describe("forecast.controller", () => {
             sma14: expect.any(Number),
             ema7: expect.any(Number),
             ema14: expect.any(Number),
-            trend: expect.any(String),
             volatility: expect.any(Number),
-            rsi: expect.any(Number),
           }),
         })
       );
@@ -71,12 +69,12 @@ describe("forecast.controller", () => {
 
       await getForecast(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({
-        error: "Insufficient Data",
-        message: "Pas assez de données historiques pour générer une prévision fiable",
+        error: "Not Found",
+        message: "Pas assez de données historiques pour générer une prévision",
+        symbol: "BTC",
         dataPoints: 2,
-        required: 30,
       });
     });
 
@@ -113,7 +111,7 @@ describe("forecast.controller", () => {
 
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          forecast: expect.arrayContaining(
+          forecasts: expect.arrayContaining(
             Array.from({ length: 14 }, () =>
               expect.objectContaining({
                 date: expect.any(String),
@@ -122,6 +120,7 @@ describe("forecast.controller", () => {
               })
             )
           ),
+          forecastDays: 14,
         })
       );
     });
@@ -138,7 +137,7 @@ describe("forecast.controller", () => {
 
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          forecast: expect.arrayContaining(
+          forecasts: expect.arrayContaining(
             Array.from({ length: 30 }, () =>
               expect.objectContaining({
                 date: expect.any(String),
@@ -147,6 +146,7 @@ describe("forecast.controller", () => {
               })
             )
           ),
+          forecastDays: 30,
         })
       );
     });
@@ -178,18 +178,20 @@ describe("forecast.controller", () => {
       expect(forecastRepository.getPriceHistoryForForecast).toHaveBeenCalledWith("BTC", 90);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          symbol: "btc",
-          indicators: expect.objectContaining({
+          symbol: "BTC",
+          movingAverages: expect.objectContaining({
             sma7: expect.any(Number),
             sma14: expect.any(Number),
             ema7: expect.any(Number),
             ema14: expect.any(Number),
-            rsi: expect.any(Number),
-            trend: expect.any(String),
-            volatility: expect.any(Number),
           }),
-          lastPrice: expect.any(Number),
-          timestamp: expect.any(String),
+          trend: expect.objectContaining({
+            direction: expect.any(String),
+          }),
+          signal: expect.objectContaining({
+            recommendation: expect.any(String),
+          }),
+          currentPrice: expect.any(Number),
         })
       );
     });
@@ -200,12 +202,11 @@ describe("forecast.controller", () => {
 
       await getIndicators(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({
-        error: "Insufficient Data",
-        message: "Pas assez de données pour calculer les indicateurs",
-        dataPoints: 1,
-        required: 14,
+        error: "Not Found",
+        message: "Pas assez de données historiques",
+        symbol: "BTC",
       });
     });
 
