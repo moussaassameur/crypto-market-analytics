@@ -1,5 +1,9 @@
 FROM postgres:16-alpine
 
+# Créer un utilisateur non-root pour la sécurité
+RUN addgroup -g 1001 backupgroup && \
+    adduser -u 1001 -G backupgroup -D backupuser
+
 # Installer les outils nécessaires
 RUN apk add --no-cache bash dcron
 
