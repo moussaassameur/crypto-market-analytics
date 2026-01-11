@@ -4,6 +4,14 @@ const forecastRepository = require("../../src/repositories/forecast.repository")
 // Mock du repository
 jest.mock("../../src/repositories/forecast.repository");
 
+// Helper pour générer des données de prix mock
+const generateMockPrices = (count = 50, startPrice = 40000, increment = 100) => {
+  return Array.from({ length: count }, (_, i) => ({
+    date: `2024-01-${String(i + 1).padStart(2, '0')}`,
+    price: startPrice + i * increment,
+  }));
+};
+
 describe("forecast.controller", () => {
   let req, res, next;
 
@@ -27,11 +35,7 @@ describe("forecast.controller", () => {
 
     it("devrait générer une prévision avec des données suffisantes", async () => {
       // Mock des données historiques avec au moins 30 points
-      const mockPrices = Array.from({ length: 50 }, (_, i) => ({ 
-        date: `2024-01-${String(i + 1).padStart(2, '0')}`, 
-        price: 40000 + i * 100 
-      }));
-      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(mockPrices);
+      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(generateMockPrices());
 
       await getForecast(req, res, next);
 
@@ -79,11 +83,7 @@ describe("forecast.controller", () => {
     });
 
     it("devrait gérer différents modèles de prévision", async () => {
-      const mockPrices = Array.from({ length: 50 }, (_, i) => ({ 
-        date: `2024-01-${String(i + 1).padStart(2, '0')}`, 
-        price: 40000 + i * 100 
-      }));
-      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(mockPrices);
+      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(generateMockPrices());
 
       const models = ["linear", "sma", "ema", "combined"];
 
@@ -100,11 +100,7 @@ describe("forecast.controller", () => {
     });
 
     it("devrait gérer différentes durées de prévision", async () => {
-      const mockPrices = Array.from({ length: 50 }, (_, i) => ({ 
-        date: `2024-01-${String(i + 1).padStart(2, '0')}`, 
-        price: 40000 + i * 100 
-      }));
-      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(mockPrices);
+      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(generateMockPrices());
 
       req.query.days = "14";
       await getForecast(req, res, next);
@@ -126,11 +122,7 @@ describe("forecast.controller", () => {
     });
 
     it("devrait limiter les jours de prévision à 30 maximum", async () => {
-      const mockPrices = Array.from({ length: 50 }, (_, i) => ({ 
-        date: `2024-01-${String(i + 1).padStart(2, '0')}`, 
-        price: 40000 + i * 100 
-      }));
-      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(mockPrices);
+      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(generateMockPrices());
 
       req.query.days = "50"; // Plus que le maximum de 30
       await getForecast(req, res, next);
@@ -167,11 +159,7 @@ describe("forecast.controller", () => {
     });
 
     it("devrait retourner les indicateurs techniques", async () => {
-      const mockPrices = Array.from({ length: 50 }, (_, i) => ({ 
-        date: `2024-01-${String(i + 1).padStart(2, '0')}`, 
-        price: 40000 + i * 100 
-      }));
-      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(mockPrices);
+      forecastRepository.getPriceHistoryForForecast.mockResolvedValue(generateMockPrices());
 
       await getIndicators(req, res, next);
 
