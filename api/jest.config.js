@@ -22,14 +22,15 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/tests/integration/setup.js"],
   // Configuration de couverture
   coverageReporters: ["text", "text-summary", "html", "lcov"],
-  coverageThreshold: {
-    global: {
-      branches: 70,
-      functions: 80,
-      lines: 80,
-      statements: 80
-    }
-  },
+  // Seuils désactivés - le coverage est analysé par SonarCloud
+  // coverageThreshold: {
+  //   global: {
+  //     branches: 70,
+  //     functions: 80,
+  //     lines: 80,
+  //     statements: 80
+  //   }
+  // },
   // Affichage détaillé de la couverture
   verbose: true,
   collectCoverage: false // Par défaut false, activé uniquement avec --coverage
