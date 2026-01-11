@@ -1,0 +1,5 @@
+# Ignore all backup files but keep the directory
+*.sql.gz
+*.tar.gz
+!README.md
+!.gitignore

@@ -88,6 +88,26 @@ services:
     networks:
       - crypto-network
 
+  # Service de backup automatique
+  backup:
+    build: ./scripts
+    container_name: crypto-backup
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: crypto_platform
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    volumes:
+      - ./backups:/backups
+      - .:/app:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crypto-network
+
 networks:
   crypto-network:
     driver: bridge
