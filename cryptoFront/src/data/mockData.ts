@@ -60,6 +60,7 @@ export interface CandlestickPoint {
 }
 
 // Generate mock historical data
+// Math.random() is safe here - only used for demo/mock data generation, not for security
 export function generatePriceHistory(basePrice: number, days: number): PricePoint[] {
   const data: PricePoint[] = [];
   let currentPrice = basePrice;
@@ -69,13 +70,13 @@ export function generatePriceHistory(basePrice: number, days: number): PricePoin
     date.setDate(date.getDate() - i);
     
     // Random price movement
-    const change = (Math.random() - 0.5) * basePrice * 0.05;
+    const change = (Math.random() - 0.5) * basePrice * 0.05; // NOSONAR - mock data generation only
     currentPrice += change;
     
     data.push({
       time: date.toISOString().split('T')[0],
       price: Math.max(currentPrice, basePrice * 0.7),
-      volume: Math.random() * 1000000000 + 500000000,
+      volume: Math.random() * 1000000000 + 500000000, // NOSONAR - mock data generation only
     });
   }
   
@@ -91,10 +92,10 @@ export function generateCandlestickData(basePrice: number, days: number): Candle
     date.setDate(date.getDate() - i);
     
     const open = currentPrice;
-    const change = (Math.random() - 0.5) * basePrice * 0.08;
+    const change = (Math.random() - 0.5) * basePrice * 0.08; // NOSONAR - mock data generation only
     const close = open + change;
-    const high = Math.max(open, close) * (1 + Math.random() * 0.02);
-    const low = Math.min(open, close) * (1 - Math.random() * 0.02);
+    const high = Math.max(open, close) * (1 + Math.random() * 0.02); // NOSONAR - mock data generation only
+    const low = Math.min(open, close) * (1 - Math.random() * 0.02); // NOSONAR - mock data generation only
     
     currentPrice = close;
     
@@ -104,7 +105,7 @@ export function generateCandlestickData(basePrice: number, days: number): Candle
       high,
       low,
       close,
-      volume: Math.random() * 1000000000 + 500000000,
+      volume: Math.random() * 1000000000 + 500000000, // NOSONAR - mock data generation only
     });
   }
   
