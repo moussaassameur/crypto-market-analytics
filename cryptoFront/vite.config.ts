@@ -5,6 +5,18 @@
 
   export default defineConfig({
     plugins: [react()],
+    test: {
+      globals: true,
+      environment: 'happy-dom',
+      include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'lcov'],
+        reportsDirectory: './coverage',
+        include: ['src/**/*.{js,ts,jsx,tsx}'],
+        exclude: ['src/test/**', 'src/**/*.test.*', 'src/**/*.spec.*'],
+      },
+    },
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {

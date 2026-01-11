@@ -17,3 +17,5 @@ desktop.ini
 *.log
 logs/
 scripts/*
+api/coverage
+api/coverage/*

@@ -101,18 +101,32 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: 'api/package-lock.json'
 
-    - name: Install Dependencies
+    - name: Install API Dependencies
       working-directory: ./api
       run: npm ci
 
-    - name: Run Tests with Coverage
+    - name: Install Frontend Dependencies
+      working-directory: ./cryptoFront
+      run: npm ci
+
+    - name: Install Collector Dependencies
+      working-directory: ./collector
+      run: npm ci
+
+    - name: Run API Tests with Coverage
       working-directory: ./api
       run: npm run test:coverage
       env:
         NODE_ENV: test
+
+    - name: Run Frontend Tests with Coverage
+      working-directory: ./cryptoFront
+      run: npm run test:coverage
+
+    - name: Run Collector Tests with Coverage
+      working-directory: ./collector
+      run: npm run test:coverage
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602  # v6
