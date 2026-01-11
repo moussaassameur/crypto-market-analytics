@@ -329,16 +329,6 @@ jobs:
         docker build -t crypto-frontend:latest ./cryptoFront
         docker build -t crypto-collector:latest ./collector
 
-    - name: Configure Local Domains
-      run: |
-        MINIKUBE_IP=$(minikube ip)
-        echo "$MINIKUBE_IP crypto-platform.local" | sudo tee -a /etc/hosts
-        echo "$MINIKUBE_IP www.crypto-platform.local" | sudo tee -a /etc/hosts
-        echo "$MINIKUBE_IP api.crypto-platform.local" | sudo tee -a /etc/hosts
-        echo "$MINIKUBE_IP grafana.crypto-platform.local" | sudo tee -a /etc/hosts
-        echo "$MINIKUBE_IP prometheus.crypto-platform.local" | sudo tee -a /etc/hosts
-        cat /etc/hosts
-
     - name: Deploy to Kubernetes
       run: kubectl apply -f k8s/
 
@@ -356,11 +346,6 @@ jobs:
       run: |
         echo "## Kubernetes Deployment" >> $GITHUB_STEP_SUMMARY
         echo "Version: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Access URLs:" >> $GITHUB_STEP_SUMMARY
-        echo "- Frontend: http://crypto-platform.local" >> $GITHUB_STEP_SUMMARY
-        echo "- API: http://api.crypto-platform.local" >> $GITHUB_STEP_SUMMARY
-        echo "- Grafana: http://grafana.crypto-platform.local" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         kubectl get pods -n crypto-platform >> $GITHUB_STEP_SUMMARY
 

@@ -47,15 +47,17 @@ app.use(helmet({
 app.disable('x-powered-by');
 
 // Rate limiting pour prévenir les attaques ReDoS et DDoS
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limite chaque IP à 100 requêtes par fenêtre
-  message: 'Trop de requêtes depuis cette IP, réessayez dans 15 minutes.',
-  standardHeaders: true, // Retourner les infos de rate limit dans les headers `RateLimit-*`
-  legacyHeaders: false, // Désactiver les headers `X-RateLimit-*`
-});
-
-app.use(limiter);
+// Désactivé en environnement de développement pour les tests de performance
+if (process.env.NODE_ENV === 'production') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limite chaque IP à 100 requêtes par fenêtre
+    message: 'Trop de requêtes depuis cette IP, réessayez dans 15 minutes.',
+    standardHeaders: true, // Retourner les infos de rate limit dans les headers `RateLimit-*`
+    legacyHeaders: false, // Désactiver les headers `X-RateLimit-*`
+  });
+  app.use(limiter);
+}
 
 // Middleware de métriques Prometheus
 app.use(metricsMiddleware);
