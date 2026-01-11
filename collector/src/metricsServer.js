@@ -2,6 +2,10 @@ const express = require('express');
 const { register } = require('./metrics');
 
 const app = express();
+
+// Disable X-Powered-By header for security (NOSONAR - intentional security hardening)
+app.disable('x-powered-by');
+
 const PORT = process.env.METRICS_PORT || 9091;
 
 // Endpoint pour Prometheus
