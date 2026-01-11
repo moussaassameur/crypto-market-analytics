@@ -23,6 +23,8 @@ describe("marketService", () => {
       const mockCoinData = [
         {
           id: "bitcoin",
+          symbol: "btc",
+          name: "Bitcoin",
           current_price: 50000,
           market_cap: 1000000000,
           total_volume: 50000000,
@@ -31,6 +33,8 @@ describe("marketService", () => {
         },
         {
           id: "ethereum",
+          symbol: "eth",
+          name: "Ethereum",
           current_price: 3000,
           market_cap: 500000000,
           total_volume: 25000000,
@@ -80,6 +84,8 @@ describe("marketService", () => {
       const mockData = [
         {
           id: "bitcoin",
+          symbol: "btc",
+          name: "Bitcoin",
           current_price: 60000,
           market_cap: 1000000000,
           total_volume: 50000000,
@@ -102,6 +108,8 @@ describe("marketService", () => {
       const mockData = [
         {
           id: "unknown-coin",
+          symbol: "unk",
+          name: "Unknown Coin",
           current_price: 100,
           market_cap: 1000,
           total_volume: 500,
