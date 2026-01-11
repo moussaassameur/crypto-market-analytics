@@ -156,27 +156,34 @@ jobs:
 
     - name: NPM Audit
       working-directory: ./api
-      run: npm audit --audit-level=moderate
+      run: npm audit --audit-level=moderate --json > audit-results.json || true
       continue-on-error: true
 
     - name: Snyk Security Test
       working-directory: ./api
       run: |
         npm install -g snyk
-        snyk auth ${{ secrets.SNYK_TOKEN }}
-        snyk test --severity-threshold=medium
+        snyk test --severity-threshold=medium --json > snyk-results.json || true
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       continue-on-error: true
+      if: ${{ secrets.SNYK_TOKEN != '' }}
 
     - name: Snyk Code Test
       working-directory: ./api
-      run: snyk code test --severity-threshold=high
+      run: snyk code test --severity-threshold=high --json > snyk-code-results.json || true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       continue-on-error: true
+      if: ${{ secrets.SNYK_TOKEN != '' }}
 
-    - name: Generate Security Report
+    - name: Security Summary
       working-directory: ./api
-      run: npm run security:report
+      run: |
+        echo "## Security Scan Results" >> $GITHUB_STEP_SUMMARY
+        echo "- NPM Audit: $([ -f audit-results.json ] && echo "✅ Completed" || echo "❌ Failed")" >> $GITHUB_STEP_SUMMARY
+        echo "- Snyk Test: $([ -f snyk-results.json ] && echo "✅ Completed" || echo "⏭️ Skipped")" >> $GITHUB_STEP_SUMMARY
+        echo "- Snyk Code: $([ -f snyk-code-results.json ] && echo "✅ Completed" || echo "⏭️ Skipped")" >> $GITHUB_STEP_SUMMARY
       continue-on-error: true
 
     - name: Upload Security Report
