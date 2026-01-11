@@ -10,7 +10,7 @@
     "test:unit": "jest tests/unit",
     "test:watch": "jest --watch",
     "test:integration": "set NODE_ENV=test&& jest tests/integration --runInBand --forceExit",
-    "test:coverage": "jest --coverage --coverageReporters=text --coverageReporters=html --coverageReporters=lcov",
+    "test:coverage": "jest --coverage --coverageReporters=lcovonly",
     "coverage": "jest --coverage --silent --coverageReporters=text-summary",
     "sonar": "sonar-scanner",
     "test:all": "npm run test:integration && npm test",
