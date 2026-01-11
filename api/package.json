@@ -24,8 +24,6 @@
     "security:snyk": "npx snyk test",
     "security:code": "npx snyk code test",
     "security:all": "npm run security:snyk && npm run security:code",
-    "security:fix": "npm audit fix && npx snyk wizard",
-    "security:report": "powershell -ExecutionPolicy Bypass -File scripts/security-simple.ps1",
     "db:init": "psql -h localhost -p 5432 -U postgres -d crypto_platform -f scripts/init-database.sql",
     "db:init:test": "set NODE_ENV=test&& psql -h localhost -p 5433 -U postgres -d crypto_test -f scripts/init-database.sql"
   },

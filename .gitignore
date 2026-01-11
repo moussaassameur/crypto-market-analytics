@@ -19,6 +19,3 @@ logs/
 scripts/*
 api/coverage
 api/coverage/*
-
-# Security tests
-api/tests/integration/security.test.js
