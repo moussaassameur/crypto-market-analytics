@@ -1,11 +1,12 @@
+/// <reference types="vitest" />
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
 
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react-swc';
-  import path from 'path';
-
-  export default defineConfig({
-    plugins: [react()],
-    test: {
+export default defineConfig({
+  plugins: [react()],
+  // @ts-ignore - Vitest config
+  test: {
       globals: true,
       environment: 'happy-dom',
       include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],

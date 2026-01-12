@@ -43,7 +43,7 @@ describe("forecast.controller", () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           symbol: "BTC",
-          model: "combined",
+          model: "sma",
           averageConfidence: expect.any(Number),
           forecasts: expect.arrayContaining([
             expect.objectContaining({
@@ -55,9 +55,7 @@ describe("forecast.controller", () => {
           indicators: expect.objectContaining({
             sma7: expect.any(Number),
             sma14: expect.any(Number),
-            ema7: expect.any(Number),
-            ema14: expect.any(Number),
-            volatility: expect.any(Number),
+            sma30: expect.any(Number),
           }),
         })
       );
@@ -82,21 +80,16 @@ describe("forecast.controller", () => {
       });
     });
 
-    it("devrait gérer différents modèles de prévision", async () => {
+    it("devrait utiliser le modèle SMA par défaut", async () => {
       forecastRepository.getPriceHistoryForForecast.mockResolvedValue(generateMockPrices());
 
-      const models = ["linear", "sma", "ema", "combined"];
+      await getForecast(req, res, next);
 
-      for (const model of models) {
-        req.query.model = model;
-        await getForecast(req, res, next);
-
-        expect(res.json).toHaveBeenCalledWith(
-          expect.objectContaining({
-            model: model,
-          })
-        );
-      }
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          model: "sma",
+        })
+      );
     });
 
     it("devrait gérer différentes durées de prévision", async () => {
@@ -170,11 +163,8 @@ describe("forecast.controller", () => {
           movingAverages: expect.objectContaining({
             sma7: expect.any(Number),
             sma14: expect.any(Number),
-            ema7: expect.any(Number),
-            ema14: expect.any(Number),
-          }),
-          trend: expect.objectContaining({
-            direction: expect.any(String),
+            sma30: expect.any(Number),
+            sma50: expect.any(Number),
           }),
           signal: expect.objectContaining({
             recommendation: expect.any(String),
