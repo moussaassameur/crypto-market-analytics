@@ -93,7 +93,7 @@ export function ForecastChart({ historicalData, forecastData }: ForecastChartPro
         
         {/* Forecast line */}
         <Line 
-          type="monotone" 
+          type="linear" 
           dataKey="predicted" 
           stroke="#8b5cf6" 
           strokeWidth={3}

@@ -10,16 +10,13 @@ const CRYPTOS = [
 ];
 
 const MODELS: { value: ModelType; label: string; description: string }[] = [
-  { value: 'combined', label: 'Combiné', description: 'Moyenne pondérée de tous les modèles' },
-  { value: 'linear', label: 'Régression linéaire', description: 'Extrapole la tendance actuelle' },
   { value: 'sma', label: 'Moyenne mobile (SMA)', description: 'Basé sur la moyenne simple' },
-  { value: 'ema', label: 'Moyenne mobile (EMA)', description: 'Moyenne exponentielle pondérée' },
 ];
 
 export function ForecastPage() {
   const [selectedCrypto, setSelectedCrypto] = useState('btc');
   const [forecastDays, setForecastDays] = useState<7 | 14 | 30>(7);
-  const [modelType, setModelType] = useState<ModelType>('combined');
+  const [modelType, setModelType] = useState<ModelType>('sma');
   const [forecastData, setForecastData] = useState<ForecastResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
