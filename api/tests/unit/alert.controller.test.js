@@ -33,8 +33,8 @@ describe("alert.controller", () => {
 
   describe("createAlert", () => {
     it("devrait créer une alerte avec succès (201)", async () => {
-      req.body = { crypto: "BTC", condition: ">", threshold: 50000 };
-      const mockAlert = {
+      req.body = { crypto: "BTC", condition: ">", threshold: 50000 };  // ARRANGE (Préparation)
+      const mockAlert = {         //la simule la création d'une alerte en base de données sans vraiment appeler la base de données
         id: 1,
         user_id: 1,
         crypto_symbol: "BTC",
@@ -47,10 +47,12 @@ describe("alert.controller", () => {
       };
       alertRepository.create.mockResolvedValue(mockAlert);
 
-      await createAlert(req, res, next);
+      await createAlert(req, res, next); // ACT (Exécution)
+
+      // ASSERT (Vérifications)
 
       expect(alertRepository.create).toHaveBeenCalledWith(1, "BTC", ">", 50000);
-      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.status).toHaveBeenCalledWith(201); // vérifie que la réponse HTTP a le bon code de statut (201)
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "Alerte créée avec succès",

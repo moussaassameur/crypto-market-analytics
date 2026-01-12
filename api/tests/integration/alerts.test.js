@@ -1,4 +1,4 @@
-const { app, resetDb, closeDb, getToken, request, db } = require("./testUtils");
+const { app, resetDb, closeDb, getToken, request, db } = require("./testUtils"); //J'importe des fonctions utilitaires que j'ai créées pour faciliter les tests 
 const alertController = require("../../src/controllers/alert.controller");
 
 describe("Alerts Integration Tests", () => {
@@ -7,7 +7,7 @@ describe("Alerts Integration Tests", () => {
   let createdAlertId;
 
   // Nettoyer la DB et créer un utilisateur avant tous les tests
-  beforeAll(async () => {
+  beforeAll(async () => {   //s'exécute une seule fois avant tous les tests
     await resetDb();
     const auth = await getToken();
     authToken = auth.token;
@@ -15,23 +15,24 @@ describe("Alerts Integration Tests", () => {
   });
 
   // Fermer la connexion après tous les tests
-  afterAll(async () => {
+  afterAll(async () => {   //nettoyage 
     await closeDb();
   });
 
   describe("POST /api/alerts", () => {
     it("devrait retourner 401 sans token d'authentification", async () => {
-      const alert = {
+      const alert = {      //preparer les données de l'alerte
         crypto: "BTC",
         condition: ">",
         threshold: 50000,
       };
 
       const res = await request(app)
-        .post("/api/alerts")
+        .post("/api/alerts")      // la jai utilisé pour faire une requête POST à l'endpoint /api/alerts
         .send(alert);
 
-      expect(res.status).toBe(401);
+      expect(res.status).toBe(401);  // la Je vérifie que l'API retourne 401 Unauthorized.
+
     });
 
     it("devrait créer une alerte avec succès (201)", async () => {
