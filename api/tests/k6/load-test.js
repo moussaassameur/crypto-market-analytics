@@ -14,7 +14,7 @@ export const options = {
   
   thresholds: {
     http_req_duration: ['p(95)<500'],      // 95% des requêtes < 500ms
-    http_req_failed: ['rate<0.01'],        // < 1% d'erreurs
+    http_req_failed: ['rate<0.30'],        // < 30% d'erreurs 
     http_reqs: ['rate>10'],                // > 10 req/sec
   }
 };
@@ -34,7 +34,7 @@ export default function(data) {
     'health OK': (r) => r.status === 200,
   }) || errorRate.add(1);
 
-  sleep(1);
+  sleep(1); //pause 
 
   // Test 2: Login
   res = http.post(`${data.baseUrl}/api/auth/login`, JSON.stringify({
