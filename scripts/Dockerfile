@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.23.3
 
 # Installer les outils nécessaires (client PostgreSQL, bash, cron)
 RUN apk add --no-cache bash dcron postgresql16-client
